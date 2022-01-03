@@ -1,3 +1,7 @@
+# Any collection folder
+/collection*
+# PhpStorm configuration
+/.idea
 
 ###> symfony/framework-bundle ###
 /.env.local
