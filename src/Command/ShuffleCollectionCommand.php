@@ -33,7 +33,12 @@ class ShuffleCollectionCommand extends Command
     /**
      * @var string
      */
-    private const START_FROM_OPTION = 'start-from';
+    private const MIN_TOKEN_ID = 'min';
+
+    /**
+     * @var string
+     */
+    private const MAX_TOKEN_ID = 'max';
 
     public function __construct(
         private readonly CollectionManager $collectionManager,
@@ -44,20 +49,33 @@ class ShuffleCollectionCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->addOption(self::START_FROM_OPTION, 's', InputOption::VALUE_OPTIONAL, 'The first token ID to be shuffled')
-        ;
+        $this->addOption(
+            self::MIN_TOKEN_ID,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'The minimum token ID to be shuffled',
+        );
+
+        $this->addOption(
+            self::MAX_TOKEN_ID,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'The maximum token ID to be shuffled',
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
-        $startFromTokenOptionValue = $input->getOption(self::START_FROM_OPTION) ?? 1;
-        $startTokenId = is_numeric($startFromTokenOptionValue) ? (int) $startFromTokenOptionValue : 1;
-        $maxTokenId = $this->collectionManager->getMaxTokenId();
+        $minTokenIdOptionValue = $input->getOption(self::MIN_TOKEN_ID);
+        $minTokenId = is_numeric($minTokenIdOptionValue) ? (int) $minTokenIdOptionValue : 1;
+        $maxTokenIdOptionValue = $input->getOption(self::MAX_TOKEN_ID);
+        $maxTokenId = is_numeric(
+            $maxTokenIdOptionValue,
+        ) ? (int) $maxTokenIdOptionValue : $this->collectionManager->getMaxTokenId();
 
         if (! $symfonyStyle->confirm(
-            'You are about to shuffle your collection starting from token #'.$startTokenId.' up to token #'.$maxTokenId.'. Are you sure?',
+            'You are about to shuffle your collection starting from token #'.$minTokenId.' up to token #'.$maxTokenId.'. This will overwrite the previous shuffle mapping. Are you sure?',
             false,
         )) {
             $symfonyStyle->warning('Aborting...');
@@ -65,26 +83,11 @@ class ShuffleCollectionCommand extends Command
             return Command::SUCCESS;
         }
 
-        $tokenIds = range($startTokenId, $maxTokenId);
-        shuffle($tokenIds);
-
-        $symfonyStyle->progressStart(count($tokenIds));
-
-        foreach ($tokenIds as $i => $newId) {
-            $oldId = $i + $startTokenId;
-
-            $this->collectionManager->temporarlyMoveToken($oldId, $newId);
-
-            $symfonyStyle->progressAdvance();
-        }
-
-        $symfonyStyle->progressFinish();
-
-        $this->collectionManager->cleanTemporaryNames();
+        $this->collectionManager->shuffle($minTokenId, $maxTokenId);
 
         $symfonyStyle->success('Collection shuffled successfully!');
 
-        $symfonyStyle->info('Remember to run "bin/console nft:update-metadata URI_PREFIX" to update the json content!');
+        $symfonyStyle->info('Remember to run "bin/console cache:clear" to invalidate metadata cache!');
 
         return Command::SUCCESS;
     }

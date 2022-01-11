@@ -1,4 +1,10 @@
 {
+    "aws/aws-crt-php": {
+        "version": "v1.0.2"
+    },
+    "aws/aws-sdk-php": {
+        "version": "3.209.2"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.4"
     },
@@ -105,6 +111,9 @@
     },
     "monolog/monolog": {
         "version": "2.3.5"
+    },
+    "mtdowling/jmespath.php": {
+        "version": "2.6.1"
     },
     "myclabs/deep-copy": {
         "version": "1.10.2"

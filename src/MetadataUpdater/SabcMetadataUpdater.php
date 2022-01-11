@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace App\MetadataUpdater;
 
 use App\Contract\MetadataUpdaterInterface;
-use App\Service\CollectionManager;
 
 /**
  * This is an example custom metadata updater for the SABC collection.
@@ -27,13 +26,9 @@ use App\Service\CollectionManager;
  */
 final class SabcMetadataUpdater implements MetadataUpdaterInterface
 {
-    public function updateMetadata(
-        array &$metadata,
-        string $uriPrefix,
-        string $tokenId,
-        CollectionManager $collectionManager,
-    ): void {
+    public function updateMetadata(array &$metadata, int $tokenId, string $assetUri): void
+    {
         $metadata['name'] = 'SABC #'.$tokenId;
-        $metadata['edition'] = (int) $tokenId;
+        $metadata['edition'] = $tokenId;
     }
 }

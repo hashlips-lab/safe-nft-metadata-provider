@@ -15,7 +15,6 @@ namespace App\Controller;
 
 use App\Config\RouteName;
 use App\Contract\AbstractNftController;
-use App\Service\CollectionManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,14 +22,21 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @author Marco Lipparini <developer@liarco.net>
  */
-#[Route('/hidden', name: RouteName::GET_HIDDEN_ASSET)]
+#[Route(
+    '/hidden.{_format}',
+    name: RouteName::GET_HIDDEN_ASSET,
+    defaults: [
+        '_format' => null,
+    ],
+)]
 final class HiddenAssetController extends AbstractNftController
 {
-    public function __invoke(CollectionManager $collectionManager): Response
+    public function __invoke(): Response
     {
-        return $this->file($collectionManager->getHiddenFilePath(), null, ResponseHeaderBag::DISPOSITION_INLINE)
+        return $this
+            ->file($this->collectionManager->getHiddenAssetFileInfo(), null, ResponseHeaderBag::DISPOSITION_INLINE)
             ->setPublic()
-            ->setMaxAge(self::YEAR_CACHE_EXPIRATION)
+            ->setMaxAge($this->getDefaultCacheExpiration())
         ;
     }
 }

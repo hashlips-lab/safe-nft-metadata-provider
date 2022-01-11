@@ -22,22 +22,29 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @author Marco Lipparini <developer@liarco.net>
  */
-#[Route('/asset/{tokenId}.{_format}', name: RouteName::GET_ASSET)]
+#[Route(
+    '/asset/{tokenId}.{_format}',
+    name: RouteName::GET_ASSET,
+    defaults: [
+        '_format' => null,
+    ],
+)]
 final class AssetController extends AbstractNftController
 {
-    public function __invoke(string $tokenId): Response
+    public function __invoke(int $tokenId): Response
     {
         if (! $this->isValidTokenId($tokenId)) {
             throw $this->createNotFoundException();
         }
 
-        return $this->file(
-            $this->collectionManager->getAssetPath($tokenId),
-            null,
-            ResponseHeaderBag::DISPOSITION_INLINE,
-        )
+        return $this
+            ->file(
+                $this->collectionManager->getAssetFileInfo($tokenId),
+                null,
+                ResponseHeaderBag::DISPOSITION_INLINE,
+            )
             ->setPublic()
-            ->setMaxAge(self::YEAR_CACHE_EXPIRATION)
+            ->setMaxAge($this->getDefaultCacheExpiration())
         ;
     }
 }
