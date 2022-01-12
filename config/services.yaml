@@ -39,7 +39,19 @@ services:
             - '%app.collection_assets_extension%'
             - '%app.collection_hidden_asset_extension%'
 
-    App\Contract\CollectionFilesystemDriverInterface: '@file_system_driver.local'
+    file_system_driver.s3:
+        class: App\FilesystemDriver\S3FilesystemDriver
+        arguments:
+            - '%env(resolve:S3_FS_DRIVER_REGION)%'
+            - '%env(resolve:S3_FS_DRIVER_ENDPOINT_URL)%'
+            - '%env(resolve:S3_FS_DRIVER_ACCESS_KEY)%'
+            - '%env(resolve:S3_FS_DRIVER_SECRET_KEY)%'
+            - '%env(resolve:S3_FS_DRIVER_BUCKET_NAME)%'
+            - '%env(resolve:S3_FS_DRIVER_OBJECTS_KEY_PREFIX)%'
+            - '%app.collection_assets_extension%'
+            - '%app.collection_hidden_asset_extension%'
+
+    App\Contract\CollectionFilesystemDriverInterface: '@file_system_driver.s3'
 
     App\Service\CollectionManager:
         arguments:
