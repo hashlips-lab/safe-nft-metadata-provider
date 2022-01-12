@@ -74,4 +74,4 @@ services:
             - '%env(WEB3_SMART_CONTRACT_ADDRESS)%'
             - '%env(WEB3_HTTP_ENDPOINT)%'
 
-    App\Contract\TotalSupplyProviderInterface: '@total_supply_provider.env_var'
+    App\Contract\TotalSupplyProviderInterface: '@total_supply_provider.web3'
