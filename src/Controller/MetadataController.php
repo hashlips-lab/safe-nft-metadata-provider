@@ -17,6 +17,7 @@ use App\Config\RouteName;
 use App\Contract\AbstractNftController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -46,7 +47,9 @@ final class MetadataController extends AbstractNftController
     public function __invoke(int $tokenId): Response
     {
         if (! $this->isValidTokenId($tokenId)) {
-            $metadata = $this->cache->get(self::CACHE_HIDDEN_METADATA, function (): array {
+            $metadata = $this->cache->get(self::CACHE_HIDDEN_METADATA, function (ItemInterface $item): array {
+                $item->expiresAfter($this->getDefaultCacheExpiration());
+
                 return $this->collectionManager->getHiddenMetadata();
             });
 
@@ -57,7 +60,9 @@ final class MetadataController extends AbstractNftController
             ;
         }
 
-        $metadata = $this->cache->get(self::CACHE_TOKEN_METADATA.$tokenId, function () use ($tokenId): array {
+        $metadata = $this->cache->get(self::CACHE_TOKEN_METADATA.$tokenId, function (ItemInterface $item) use ($tokenId): array {
+            $item->expiresAfter($this->getDefaultCacheExpiration());
+
             return $this->collectionManager->getMetadata($tokenId);
         });
 
