@@ -1,6 +1,18 @@
 {
+    "aws/aws-crt-php": {
+        "version": "v1.0.2"
+    },
+    "aws/aws-sdk-php": {
+        "version": "3.209.2"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.4"
+    },
+    "digitaldonkey/ecverify": {
+        "version": "1.0"
+    },
+    "digitaldonkey/ethereum-php": {
+        "version": "dev-master"
     },
     "doctrine/annotations": {
         "version": "1.13",
@@ -88,6 +100,9 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
+    "graze/guzzle-jsonrpc": {
+        "version": "3.2.1"
+    },
     "guzzlehttp/guzzle": {
         "version": "6.5.5"
     },
@@ -106,6 +121,9 @@
     "monolog/monolog": {
         "version": "2.3.5"
     },
+    "mtdowling/jmespath.php": {
+        "version": "2.6.1"
+    },
     "myclabs/deep-copy": {
         "version": "1.10.2"
     },
@@ -117,6 +135,9 @@
     },
     "nikic/php-parser": {
         "version": "v4.13.2"
+    },
+    "pear/math_biginteger": {
+        "version": "v1.0.3"
     },
     "phar-io/manifest": {
         "version": "2.0.3"
@@ -132,9 +153,6 @@
     },
     "phpdocumentor/type-resolver": {
         "version": "1.5.1"
-    },
-    "phpseclib/phpseclib": {
-        "version": "2.0.35"
     },
     "phpspec/prophecy": {
         "version": "v1.15.0"
@@ -201,9 +219,6 @@
     "rector/rector": {
         "version": "0.12.10"
     },
-    "sc0vu/web3.php": {
-        "version": "dev-master"
-    },
     "sebastian/cli-parser": {
         "version": "1.0.1"
     },
@@ -263,6 +278,15 @@
         "files": [
             "config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "simplito/bigint-wrapper-php": {
+        "version": "1.0.0"
+    },
+    "simplito/bn-php": {
+        "version": "1.1.2"
+    },
+    "simplito/elliptic-php": {
+        "version": "1.0.9"
     },
     "symfony/apache-pack": {
         "version": "1.0",

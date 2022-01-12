@@ -17,6 +17,7 @@ use App\Config\RouteName;
 use App\Contract\AbstractNftController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -24,10 +25,22 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/total-supply', name: RouteName::GET_TOTAL_SUPPLY)]
 final class TotalSupplyController extends AbstractNftController
 {
+    /**
+     * @var string
+     */
+    private const CACHE_RESPONSE_DATA = 'total_supply_controller.response_data';
+
     public function __invoke(): Response
     {
-        return $this->json([
-            'total_supply' => $this->totalSupplyProvider->getTotalSupply(),
-        ]);
+        /** @var array<string, int> $responseData */
+        $responseData = $this->cache->get(self::CACHE_RESPONSE_DATA, function (ItemInterface $item): array {
+            $item->expiresAfter($this->getDefaultCacheExpiration());
+
+            return [
+                'total_supply' => $this->totalSupplyProvider->getTotalSupply(),
+            ];
+        });
+
+        return $this->json($responseData);
     }
 }

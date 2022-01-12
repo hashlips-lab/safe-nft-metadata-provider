@@ -15,12 +15,9 @@ namespace App\Controller;
 
 use App\Config\RouteName;
 use App\Contract\AbstractNftController;
-use Nette\Utils\FileSystem;
-use Nette\Utils\Json;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -31,40 +28,51 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     requirements: [
         '_format' => 'json',
     ],
+    defaults: [
+        '_format' => 'json',
+    ],
 )]
 final class MetadataController extends AbstractNftController
 {
-    public function __invoke(string $tokenId): Response
+    /**
+     * @var string
+     */
+    private const CACHE_TOKEN_METADATA = 'metadata_controller.metadata_';
+
+    /**
+     * @var string
+     */
+    private const CACHE_HIDDEN_METADATA = 'collection_manager.hidden_metadata';
+
+    public function __invoke(int $tokenId): Response
     {
         if (! $this->isValidTokenId($tokenId)) {
-            $hiddenMetadata = $this->cache->get('metadata_controller.hidden_metadata', function (): array {
-                /** @var array<string, mixed> $hiddenMetadata */
-                $hiddenMetadata = Json::decode(
-                    FileSystem::read($this->collectionManager->getHiddenMetadataPath()),
-                    Json::FORCE_ARRAY,
-                );
-                $hiddenMetadata['image'] = $this->urlGenerator->generate(
-                    'hidden_asset',
-                    [],
-                    UrlGeneratorInterface::ABSOLUTE_URL,
-                );
+            $metadata = $this->cache->get(self::CACHE_HIDDEN_METADATA, function (ItemInterface $item): array {
+                $item->expiresAfter($this->getDefaultCacheExpiration());
 
-                return $hiddenMetadata;
+                return $this->collectionManager->getHiddenMetadata();
             });
 
-            return $this->json($hiddenMetadata)
+            return $this
+                ->json($metadata)
                 ->setPublic()
                 ->setMaxAge($this->getDefaultCacheExpiration())
             ;
         }
 
-        return $this->file(
-            $this->collectionManager->getMetadataPath($tokenId),
-            null,
-            ResponseHeaderBag::DISPOSITION_INLINE,
-        )
+        $metadata = $this->cache->get(
+            self::CACHE_TOKEN_METADATA.$tokenId,
+            function (ItemInterface $item) use ($tokenId): array {
+                $item->expiresAfter($this->getDefaultCacheExpiration());
+
+                return $this->collectionManager->getMetadata($tokenId);
+            },
+        );
+
+        return $this
+            ->json($metadata)
             ->setPublic()
-            ->setMaxAge(self::YEAR_CACHE_EXPIRATION)
+            ->setMaxAge($this->getDefaultCacheExpiration())
         ;
     }
 }

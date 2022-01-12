@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Config\RouteName;
+use App\Contract\CollectionFilesystemDriverInterface;
 use App\Contract\MetadataUpdaterInterface;
-use LogicException;
-use Nette\Utils\FileSystem as NetteFilesystem;
-use Nette\Utils\Json;
-use RuntimeException;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
+use App\Exception\InvalidTokenIdException;
+use App\Exception\InvalidTokensRangeException;
+use SplFileInfo;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 /**
@@ -30,218 +30,131 @@ final class CollectionManager
     /**
      * @var string
      */
-    private const COLLECTION_PATH = __DIR__.'/../../collection';
-
-    /**
-     * @var string
-     */
-    private const ASSETS_PATH = self::COLLECTION_PATH.'/assets';
-
-    /**
-     * @var string
-     */
-    private const METADATA_PATH = self::COLLECTION_PATH.'/metadata';
-
-    /**
-     * @var string
-     */
-    private const HIDDEN_PATH = self::COLLECTION_PATH.'/hidden';
-
-    private int $maxTokenId;
-
-    private string $assetsExtension;
+    private const CACHE_MAPPING = 'collection_manager.mapping';
 
     /**
      * @param iterable<MetadataUpdaterInterface> $metadataUpdaters
      */
     public function __construct(
+        private readonly int $maxTokenId,
         private readonly iterable $metadataUpdaters,
-        private readonly Filesystem $filesystem,
+        private readonly CollectionFilesystemDriverInterface $collectionFilesystemDriver,
         private readonly CacheInterface $cache,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
-    }
-
-    public function createCollectionFolder(): void
-    {
-        if ($this->filesystem->exists(self::COLLECTION_PATH)) {
-            throw new RuntimeException('The collection folder already exists in "'.realpath(
-                self::COLLECTION_PATH,
-            ).'".');
-        }
-
-        $this->filesystem->mkdir(self::COLLECTION_PATH);
-        $this->filesystem->mkdir(self::ASSETS_PATH);
-        $this->filesystem->mkdir(self::METADATA_PATH);
-        $this->filesystem->mkdir(self::HIDDEN_PATH);
     }
 
     public function getMaxTokenId(): int
     {
-        if (! isset($this->maxTokenId)) {
-            /** @var int $cachedMaxTokenId */
-            $cachedMaxTokenId = $this->cache->get('collection_manager.max_token_id', function (): int {
-                $maxTokenId = 1;
-                $metadataFinder = (new Finder())->files()->in(self::METADATA_PATH)->name('*.json');
-
-                foreach ($metadataFinder->getIterator() as $metadataFile) {
-                    $id = (int) $metadataFile->getFilenameWithoutExtension();
-
-                    if ($id > $maxTokenId) {
-                        $maxTokenId = $id;
-                    }
-                }
-
-                return $maxTokenId;
-            });
-
-            $this->maxTokenId = $cachedMaxTokenId;
-        }
-
         return $this->maxTokenId;
     }
 
-    public function temporarlyMoveToken(int $oldId, int $newId): void
+    public function shuffle(int $min, int $max): void
     {
-        $this->filesystem->rename($this->getMetadataPath($oldId), $this->getMetadataPath('_'.$newId));
-        $this->filesystem->rename($this->getAssetPath($oldId), $this->getAssetPath('_'.$newId));
-    }
-
-    public function cleanTemporaryNames(): void
-    {
-        // Metadata
-        $metadataFinder = (new Finder())->files()->in(self::METADATA_PATH)->name('_*.json');
-
-        foreach ($metadataFinder->getIterator() as $metadataFile) {
-            $oldFile = $metadataFile->getRealPath();
-            $newFile = $metadataFile->getPath().'/'.substr($metadataFile->getFilename(), 1);
-
-            if (! is_string($oldFile)) {
-                throw new RuntimeException('Invalid old file path.');
-            }
-
-            $this->filesystem->rename($oldFile, $newFile);
+        if ($min <= 0 || $min >= $max || $max > $this->maxTokenId) {
+            throw new InvalidTokensRangeException($min, $max);
         }
 
-        // Assets
-        $assetsFinder = (new Finder())->files()->in(self::ASSETS_PATH)->name('_*.'.$this->getAssetsExtension());
+        $tokenIds = range(1, $this->maxTokenId);
 
-        foreach ($assetsFinder->getIterator() as $assetFile) {
-            $oldFile = $assetFile->getRealPath();
-            $newFile = $assetFile->getPath().'/'.substr($assetFile->getFilename(), 1);
+        $beforeRange = array_slice($tokenIds, 0, $min - 1);
+        $range = array_slice($tokenIds, $min - 1, $max - ($min - 1));
+        $afterRange = array_slice($tokenIds, $max);
+        shuffle($range);
 
-            if (! is_string($oldFile)) {
-                throw new RuntimeException('Invalid old file path.');
-            }
+        $this->collectionFilesystemDriver->storeNewShuffleMapping(array_merge($beforeRange, $range, $afterRange));
 
-            $this->filesystem->rename($oldFile, $newFile);
-        }
-    }
-
-    public function updateUris(?string $uriPrefix): void
-    {
-        $metadataFinder = (new Finder())->files()->in(self::METADATA_PATH)->name('*.json');
-
-        foreach ($metadataFinder->getIterator() as $metadataFile) {
-            $jsonFilePath = $metadataFile->getRealPath();
-            $tokenId = $metadataFile->getFilenameWithoutExtension();
-
-            if (! is_string($jsonFilePath)) {
-                throw new RuntimeException('Invalid JSON file path.');
-            }
-
-            /** @var array<string, mixed> $jsonContent */
-            $jsonContent = Json::decode(NetteFilesystem::read($jsonFilePath), Json::FORCE_ARRAY);
-
-            $jsonContent['image'] = $uriPrefix.'/'.$tokenId.'.'.$this->getAssetsExtension();
-
-            NetteFilesystem::write($jsonFilePath, Json::encode($jsonContent, Json::PRETTY));
-        }
-    }
-
-    public function updateMetadata(string $uriPrefix): void
-    {
-        $metadataFinder = (new Finder())->files()->in(self::METADATA_PATH)->name('*.json');
-
-        foreach ($metadataFinder->getIterator() as $metadataFile) {
-            $jsonFilePath = $metadataFile->getRealPath();
-            $tokenId = $metadataFile->getFilenameWithoutExtension();
-
-            if (! is_string($jsonFilePath)) {
-                throw new RuntimeException('Invalid JSON file path.');
-            }
-
-            $jsonContent = Json::decode(NetteFilesystem::read($jsonFilePath), Json::FORCE_ARRAY);
-
-            foreach ($this->metadataUpdaters as $metadataUpdater) {
-                $metadataUpdater->updateMetadata($jsonContent, $uriPrefix, $tokenId, $this);
-            }
-
-            NetteFilesystem::write($jsonFilePath, Json::encode($jsonContent, Json::PRETTY));
-        }
-    }
-
-    public function getMetadataPath(int|string $tokenId): string
-    {
-        return self::METADATA_PATH.'/'.$tokenId.'.json';
-    }
-
-    public function getAssetPath(int|string $tokenId): string
-    {
-        return self::ASSETS_PATH.'/'.$tokenId.'.'.$this->getAssetsExtension();
-    }
-
-    public function getHiddenFilePath(): string
-    {
-        $cachedHiddenFilePath = $this->cache->get('collection_manager.hidden_file_path', function (): string {
-            $hiddenMetadataFinder = (new Finder())->files()->in(__DIR__.'/../../collection/hidden')->notName('*.json');
-
-            foreach ($hiddenMetadataFinder->getIterator() as $hiddenMetadataFile) {
-                $hiddenMetadataFilePath = $hiddenMetadataFile->getRealPath();
-
-                if (! is_string($hiddenMetadataFilePath)) {
-                    throw new RuntimeException('Invalid JSON file path (hidden metadata).');
-                }
-
-                return $hiddenMetadataFilePath;
-            }
-
-            throw new RuntimeException('Unable to detect "hidden" file.');
-        });
-
-        if (! is_string($cachedHiddenFilePath)) {
-            throw new LogicException('Unexpected value type (this should never happen).');
-        }
-
-        return $cachedHiddenFilePath;
-    }
-
-    public function getHiddenMetadataPath(): string
-    {
-        return self::COLLECTION_PATH.'/hidden/hidden.json';
-    }
-
-    public function getAbi(): string
-    {
-        return NetteFilesystem::read(self::COLLECTION_PATH.'/abi.json');
+        $this->cache->delete(self::CACHE_MAPPING);
     }
 
     public function getAssetsExtension(): string
     {
-        if (! isset($this->assetsExtension)) {
-            /** @var string $cachedAssetsExtension */
-            $cachedAssetsExtension = $this->cache->get('collection_manager.assets_extension', function (): string {
-                $assetsFinder = (new Finder())->files()->in(self::ASSETS_PATH);
+        return $this->collectionFilesystemDriver->getAssetsExtension();
+    }
 
-                foreach ($assetsFinder->getIterator() as $hiddenMetadataFile) {
-                    return $hiddenMetadataFile->getExtension();
-                }
+    public function getHiddenAssetExtension(): string
+    {
+        return $this->collectionFilesystemDriver->getHiddenAssetExtension();
+    }
 
-                throw new RuntimeException('Unable to detect assets extension.');
-            });
+    /**
+     * @return array<string, mixed>
+     */
+    public function getMetadata(int $tokenId, string $assetUri = null): array
+    {
+        $metadata = $this->collectionFilesystemDriver->getMetadata($this->getMappedTokenId($tokenId));
 
-            $this->assetsExtension = $cachedAssetsExtension;
+        foreach ($this->metadataUpdaters as $metadataUpdater) {
+            $metadataUpdater->updateMetadata(
+                $metadata,
+                $tokenId,
+                $assetUri ?? $this->urlGenerator->generate(
+                    RouteName::GET_ASSET,
+                    [
+                        'tokenId' => $tokenId,
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL,
+                ),
+            );
         }
 
-        return $this->assetsExtension;
+        return $metadata;
+    }
+
+    public function getAssetFileInfo(int $tokenId): SplFileInfo
+    {
+        return $this->collectionFilesystemDriver->getAssetFileInfo($this->getMappedTokenId($tokenId));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getHiddenMetadata(string $assetUri = null): array
+    {
+        $hiddenMetadata = $this->collectionFilesystemDriver->getHiddenMetadata();
+
+        $hiddenMetadata['image'] = $assetUri ?? $this->urlGenerator->generate(
+            RouteName::GET_HIDDEN_ASSET,
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL,
+        );
+
+        return $hiddenMetadata;
+    }
+
+    public function getHiddenAssetFileInfo(): SplFileInfo
+    {
+        return $this->collectionFilesystemDriver->getHiddenAssetFileInfo();
+    }
+
+    /**
+     * @return object[]
+     */
+    public function getAbi(): array
+    {
+        return $this->collectionFilesystemDriver->getAbi();
+    }
+
+    /**
+     * @return null|int[]
+     */
+    public function getShuffleMapping(): ?array
+    {
+        return $this->collectionFilesystemDriver->getShuffleMapping();
+    }
+
+    private function getMappedTokenId(int $tokenId): int
+    {
+        $shuffleMapping = $this->collectionFilesystemDriver->getShuffleMapping();
+
+        if (null === $shuffleMapping) {
+            return $tokenId;
+        }
+
+        if (! isset($shuffleMapping[$tokenId - 1])) {
+            throw new InvalidTokenIdException($tokenId);
+        }
+
+        return $shuffleMapping[$tokenId - 1];
     }
 }

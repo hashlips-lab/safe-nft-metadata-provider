@@ -1,0 +1,62 @@
+spec:
+  alerts:
+    - rule: DEPLOYMENT_FAILED
+    - rule: DOMAIN_FAILED
+  name: safe-nft-metadata-provider
+  region: fra
+  services:
+    - environment_slug: php
+      envs:
+        - key: APP_ENV
+          scope: RUN_AND_BUILD_TIME
+          value: prod
+        - key: COLLECTION_MAX_SUPPLY
+          scope: RUN_TIME
+          value: "10000"
+        - key: COLLECTION_ASSETS_EXTENSION
+          scope: RUN_TIME
+          value: png
+        - key: COLLECTION_HIDDEN_ASSET_EXTENSION
+          scope: RUN_TIME
+          value: gif
+        - key: CACHE_EXPIRATION
+          scope: RUN_TIME
+          value: "600"
+        - key: S3_FS_DRIVER_REGION
+          scope: RUN_TIME
+          value: fra1
+        - key: S3_FS_DRIVER_ENDPOINT_URL
+          scope: RUN_TIME
+          value: https://fra1.digitaloceanspaces.com
+        - key: S3_FS_DRIVER_ACCESS_KEY
+          scope: RUN_TIME
+          type: SECRET
+          value: YOUR_ACCESS_KEY
+        - key: S3_FS_DRIVER_SECRET_KEY
+          scope: RUN_TIME
+          type: SECRET
+          value: YOUR_SECRET_KEY
+        - key: S3_FS_DRIVER_BUCKET_NAME
+          scope: RUN_TIME
+          value: my-bucket
+        - key: S3_FS_DRIVER_OBJECTS_KEY_PREFIX
+          scope: RUN_TIME
+        - key: WEB3_SMART_CONTRACT_ADDRESS
+          scope: RUN_TIME
+          value: 0xaDC28cac9c1d53cC7457b11CC9423903dc09DDDc
+        - key: WEB3_HTTP_ENDPOINT
+          scope: RUN_TIME
+          type: SECRET
+          value: https://mainnet.infura.io/v3/YOUR_PROJECT_ID_HERE
+      github:
+        branch: main
+        deploy_on_push: false
+        repo: liarco-network/safe-nft-metadata-provider
+      http_port: 8080
+      instance_count: 1
+      instance_size_slug: basic-xxs
+      name: metadata-provider
+      routes:
+        - path: /
+      run_command: heroku-php-apache2 public/
+      source_dir: /

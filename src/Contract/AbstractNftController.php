@@ -23,11 +23,6 @@ use Symfony\Contracts\Cache\CacheInterface;
  */
 abstract class AbstractNftController extends AbstractController
 {
-    /**
-     * @var int
-     */
-    protected const YEAR_CACHE_EXPIRATION = 60 * 60 * 24 * 356;
-
     public function __construct(
         protected CollectionManager $collectionManager,
         protected TotalSupplyProviderInterface $totalSupplyProvider,
@@ -36,11 +31,9 @@ abstract class AbstractNftController extends AbstractController
     ) {
     }
 
-    protected function isValidTokenId(string $tokenId): bool
+    protected function isValidTokenId(int $tokenId): bool
     {
-        $intTokenId = (int) $tokenId;
-
-        return $intTokenId > 0 && $intTokenId <= $this->totalSupplyProvider->getTotalSupply();
+        return $tokenId > 0 && $tokenId <= $this->totalSupplyProvider->getTotalSupply();
     }
 
     protected function getDefaultCacheExpiration(): int

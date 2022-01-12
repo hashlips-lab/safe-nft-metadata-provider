@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.cache_expiration: '%env(int:CACHE_EXPIRATION)%'
+    app.collection_max_supply: '%env(int:COLLECTION_MAX_SUPPLY)%'
+    app.collection_assets_extension: '%env(COLLECTION_ASSETS_EXTENSION)%'
+    app.collection_hidden_asset_extension: '%env(COLLECTION_HIDDEN_ASSET_EXTENSION)%'
 
 services:
     # default configuration for services in *this* file
@@ -29,8 +32,30 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    file_system_driver.local:
+        class: App\FilesystemDriver\LocalFilesystemDriver
+        arguments:
+            - '%env(resolve:LOCAL_FS_DRIVER_COLLECTION_PATH)%'
+            - '%app.collection_assets_extension%'
+            - '%app.collection_hidden_asset_extension%'
+
+    file_system_driver.s3:
+        class: App\FilesystemDriver\S3FilesystemDriver
+        arguments:
+            - '%env(resolve:S3_FS_DRIVER_REGION)%'
+            - '%env(resolve:S3_FS_DRIVER_ENDPOINT_URL)%'
+            - '%env(resolve:S3_FS_DRIVER_ACCESS_KEY)%'
+            - '%env(resolve:S3_FS_DRIVER_SECRET_KEY)%'
+            - '%env(resolve:S3_FS_DRIVER_BUCKET_NAME)%'
+            - '%env(resolve:S3_FS_DRIVER_OBJECTS_KEY_PREFIX)%'
+            - '%app.collection_assets_extension%'
+            - '%app.collection_hidden_asset_extension%'
+
+    App\Contract\CollectionFilesystemDriverInterface: '@file_system_driver.s3'
+
     App\Service\CollectionManager:
         arguments:
+            - '%app.collection_max_supply%'
             - !tagged_iterator app.metadata_updater
 
     total_supply_provider.env_var:
@@ -49,4 +74,4 @@ services:
             - '%env(WEB3_SMART_CONTRACT_ADDRESS)%'
             - '%env(WEB3_HTTP_ENDPOINT)%'
 
-    App\Contract\TotalSupplyProviderInterface: '@total_supply_provider.env_var'
+    App\Contract\TotalSupplyProviderInterface: '@total_supply_provider.web3'

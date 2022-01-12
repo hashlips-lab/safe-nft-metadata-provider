@@ -14,19 +14,14 @@ declare(strict_types=1);
 namespace App\MetadataUpdater;
 
 use App\Contract\MetadataUpdaterInterface;
-use App\Service\CollectionManager;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
  */
 final class UriUpdater implements MetadataUpdaterInterface
 {
-    public function updateMetadata(
-        array &$metadata,
-        string $uriPrefix,
-        string $tokenId,
-        CollectionManager $collectionManager,
-    ): void {
-        $metadata['image'] = $uriPrefix.'/'.$tokenId.'.'.$collectionManager->getAssetsExtension();
+    public function updateMetadata(array &$metadata, int $tokenId, string $assetUri): void
+    {
+        $metadata['image'] = $assetUri;
     }
 }

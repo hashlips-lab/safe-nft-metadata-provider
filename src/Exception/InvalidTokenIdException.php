@@ -11,15 +11,17 @@
 
 declare(strict_types=1);
 
-namespace App\Contract;
+namespace App\Exception;
+
+use RuntimeException;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
  */
-interface MetadataUpdaterInterface
+final class InvalidTokenIdException extends RuntimeException
 {
-    /**
-     * @param array<string, mixed> $metadata
-     */
-    public function updateMetadata(array &$metadata, int $tokenId, string $assetUri): void;
+    public function __construct(int $tokenId)
+    {
+        parent::__construct('Invalid token ID: '.$tokenId);
+    }
 }

@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace App\Contract;
 
+use Ethereum\DataType\EthQ;
+
 /**
  * @author Marco Lipparini <developer@liarco.net>
  */
-interface MetadataUpdaterInterface
+interface CollectionContractInterface
 {
-    /**
-     * @param array<string, mixed> $metadata
-     */
-    public function updateMetadata(array &$metadata, int $tokenId, string $assetUri): void;
+    public function totalSupply(): EthQ;
 }
