@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace App\TotalSupplyProvider;
 
+use App\Contract\CollectionContractInterface;
 use App\Contract\TotalSupplyProviderInterface;
 use App\Service\CollectionManager;
-use phpseclib\Math\BigInteger;
+use Ethereum\Ethereum;
+use Ethereum\SmartContract;
 use RuntimeException;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
-use Web3\Contract;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -29,45 +27,32 @@ final class Web3Provider implements TotalSupplyProviderInterface
 {
     private int $totalSupply;
 
-    private readonly Contract $contract;
+    private readonly SmartContract $contract;
 
     public function __construct(
-        private readonly string $contractAddress,
+        string $contractAddress,
         string $infuraEndpoint,
         CollectionManager $collectionManager,
-        private readonly CacheInterface $cache,
-        private readonly ParameterBagInterface $parameterBag,
     ) {
-        $this->contract = new Contract($infuraEndpoint, $collectionManager->getAbi());
+        $this->contract = new SmartContract(
+            $collectionManager->getAbi(),
+            $contractAddress,
+            new Ethereum($infuraEndpoint),
+        );
     }
 
     public function getTotalSupply(): int
     {
         if (! isset($this->totalSupply)) {
-            /** @var int $cachedTotalSupply */
-            $cachedTotalSupply = $this->cache->get('web3_provider.total_supply', function (ItemInterface $item): int {
-                $item->expiresAfter((int) $this->parameterBag->get('app.cache_expiration'));
-                $totalSupply = 0;
+            /** @var CollectionContractInterface $smartContract */
+            $smartContract = $this->contract;
+            $totalSupply = $smartContract->totalSupply()->val();
 
-                $this->contract->at($this->contractAddress)->call(
-                    'totalSupply',
-                    [],
-                    function ($error, $decodedTransaction) use (&$totalSupply): void {
-                        /** @var BigInteger $result */
-                        $result = $decodedTransaction[0];
+            if (! is_int($totalSupply)) {
+                throw new RuntimeException('Unexpected result from "totalSupply" call: "'.$totalSupply.'"');
+            }
 
-                        $totalSupply = (int) $result->toString();
-                    },
-                );
-
-                if (0 === $totalSupply) {
-                    throw new RuntimeException('Unable to get total supply using Web3 provider.');
-                }
-
-                return $totalSupply;
-            });
-
-            $this->totalSupply = $cachedTotalSupply;
+            $this->totalSupply = $totalSupply;
         }
 
         return $this->totalSupply;

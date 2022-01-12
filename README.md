@@ -2,13 +2,6 @@
 
 Hi! This project implements a basic HTTP metadata (and assets) provider using [Symfony](https://www.symfony.com).
 
-## Dependencies
-This project uses PHP `8.1`, but unfortunately the `sc0vu/web3.php` package doesn't support it yet (officially), so you
-have to skip the PHP platform requirement when running composer commands until it gets updated. 
-```bash
-composer install --ignore-platform-req=php
-```
-
 ## YouTube tutorial
 Coming soon...
 

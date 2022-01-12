@@ -91,9 +91,20 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
         return new File($this->localCollectionPath.self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension);
     }
 
-    public function getAbi(): string
+    /**
+     * @return object[]
+     */
+    public function getAbi(): array
     {
-        return FileSystem::read($this->localCollectionPath.self::ABI_PATH);
+        $abi = Json::decode(FileSystem::read($this->localCollectionPath.self::ABI_PATH));
+
+        if (! is_array($abi)) {
+            throw new LogicException('Unexpected ABI value (it must be an array).');
+        }
+
+        /** @var object[] $abi */
+
+        return $abi;
     }
 
     public function getShuffleMapping(): ?array

@@ -127,7 +127,10 @@ final class CollectionManager
         return $this->collectionFilesystemDriver->getHiddenAssetFileInfo();
     }
 
-    public function getAbi(): string
+    /**
+     * @return object[]
+     */
+    public function getAbi(): array
     {
         return $this->collectionFilesystemDriver->getAbi();
     }

@@ -68,7 +68,10 @@ interface CollectionFilesystemDriverInterface
 
     public function getHiddenAssetFileInfo(): SplFileInfo;
 
-    public function getAbi(): string;
+    /**
+     * @return object[]
+     */
+    public function getAbi(): array;
 
     /**
      * @return null|int[]
