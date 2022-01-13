@@ -21,7 +21,7 @@ Use it during the minting stage, then move your collection back to a decentraliz
 ## YouTube tutorial
 Coming soon...
 
-## Deployment suggestion
+## Deployment suggestions
 We suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095), behind a strong CDN network like
 [CloudFlare](https://www.cloudflare.com).
 
