@@ -26,7 +26,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 #[AsCommand(
     name: 'nft:shuffle-collection',
-    description: 'Shuffles all or a range of tokens',
+    description: 'Generates a new shuffle mapping for all the tokens (or the given range)',
 )]
 class ShuffleCollectionCommand extends Command
 {
