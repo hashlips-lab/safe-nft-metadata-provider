@@ -18,6 +18,11 @@ class RouteName
     /**
      * @var string
      */
+    final public const ROOT = 'root';
+
+    /**
+     * @var string
+     */
     final public const GET_ASSET = 'get_asset';
 
     /**
