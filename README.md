@@ -8,7 +8,7 @@ A simple yet powerful HTTP metadata and assets provider for NFT collections usin
 - shuffle a range of tokens without messing around with your original metadata
   _(e.g. owning a half-minted collection? We have you covered! Keep you tokens safe with a zero-downtime solution
   and keep snipers away)_
-- powerful collection management tools built-in (shuffle tokens, update metadata, etc.)
+- powerful collection management tools built-in _(shuffle tokens, update metadata, etc.)_
 - customizable to fit your needs
 - easy and strong deployment options _(ranging from the newbie to the expert)_
 - multiple storage options _(local, S3 or your own implementation...)_
