@@ -18,9 +18,12 @@ use App\Contract\CollectionFilesystemDriverInterface;
 use App\Contract\MetadataUpdaterInterface;
 use App\Exception\InvalidTokenIdException;
 use App\Exception\InvalidTokensRangeException;
+use LogicException;
 use SplFileInfo;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -40,6 +43,7 @@ final class CollectionManager
         private readonly iterable $metadataUpdaters,
         private readonly CollectionFilesystemDriverInterface $collectionFilesystemDriver,
         private readonly CacheInterface $cache,
+        private readonly ParameterBagInterface $parameterBag,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -140,7 +144,17 @@ final class CollectionManager
      */
     public function getShuffleMapping(): ?array
     {
-        return $this->collectionFilesystemDriver->getShuffleMapping();
+        $shuffleMapping = $this->cache->get(self::CACHE_MAPPING, function (ItemInterface $item): ?array {
+            $item->expiresAfter((int) $this->parameterBag->get('app.cache_expiration'));
+
+            return $this->collectionFilesystemDriver->getShuffleMapping();
+        });
+
+        if (! is_array($shuffleMapping) && null !== $shuffleMapping) {
+            throw new LogicException('Unexpected cache value (it must be an array or null).');
+        }
+
+        return $shuffleMapping;
     }
 
     public function clearShuffledMetadata(): void

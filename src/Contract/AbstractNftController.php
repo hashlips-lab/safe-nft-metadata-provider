@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace App\Contract;
 
 use App\Service\CollectionManager;
+use App\TotalSupplyProvider\CachedTotalSupplyProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -24,16 +25,16 @@ use Symfony\Contracts\Cache\CacheInterface;
 abstract class AbstractNftController extends AbstractController
 {
     public function __construct(
-        protected CollectionManager $collectionManager,
-        protected TotalSupplyProviderInterface $totalSupplyProvider,
-        protected UrlGeneratorInterface $urlGenerator,
-        protected CacheInterface $cache,
+        protected readonly CollectionManager $collectionManager,
+        protected readonly CachedTotalSupplyProvider $cachedTotalSupplyProvider,
+        protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly CacheInterface $cache,
     ) {
     }
 
     protected function isValidTokenId(int $tokenId): bool
     {
-        return $tokenId > 0 && $tokenId <= $this->totalSupplyProvider->getTotalSupply();
+        return $tokenId > 0 && $tokenId <= $this->cachedTotalSupplyProvider->getTotalSupply();
     }
 
     protected function getDefaultCacheExpiration(): int

@@ -30,9 +30,36 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    #
+    # [BEGIN] Safe NFT Metadata Provider configuration
+    #
 
+    # FileSystemDriver configuration
+    #
+    # Available options:
+    # - @file_system_driver.local
+    # - @file_system_driver.s3
+    App\Contract\CollectionFilesystemDriverInterface: '@file_system_driver.s3'
+
+    # FileSystemDriver configuration
+    #
+    # Available options:
+    # - @total_supply_provider.env_var
+    # - @total_supply_provider.open_sea_stats
+    # - @total_supply_provider.web3
+    total_supply_provider: '@total_supply_provider.web3'
+
+    #
+    # [END] Safe NFT Metadata Provider configuration
+    #
+
+    # Collection manager service
+    App\Service\CollectionManager:
+        arguments:
+            - '%app.collection_max_supply%'
+            - !tagged_iterator app.metadata_updater
+
+    # File system drivers
     file_system_driver.local:
         class: App\FilesystemDriver\LocalFilesystemDriver
         arguments:
@@ -52,13 +79,7 @@ services:
             - '%app.collection_assets_extension%'
             - '%app.collection_hidden_asset_extension%'
 
-    App\Contract\CollectionFilesystemDriverInterface: '@file_system_driver.s3'
-
-    App\Service\CollectionManager:
-        arguments:
-            - '%app.collection_max_supply%'
-            - !tagged_iterator app.metadata_updater
-
+    # Total supply providers
     total_supply_provider.env_var:
         class: App\TotalSupplyProvider\EnvVarProvider
         arguments:
@@ -75,4 +96,6 @@ services:
             - '%env(WEB3_SMART_CONTRACT_ADDRESS)%'
             - '%env(WEB3_HTTP_ENDPOINT)%'
 
-    App\Contract\TotalSupplyProviderInterface: '@total_supply_provider.web3'
+    App\TotalSupplyProvider\CachedTotalSupplyProvider:
+        arguments:
+            - '@total_supply_provider'
