@@ -152,6 +152,36 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
         FileSystem::write($this->buildS3Path(self::MAPPING_PATH), Json::encode($newShuffleMapping), null);
     }
 
+    public function clearShuffledMetadata(): void
+    {
+        FileSystem::delete($this->buildS3Path(self::SHUFFLED_METADATA_PATH));
+    }
+
+    public function clearShuffledAssets(): void
+    {
+        FileSystem::delete($this->buildS3Path(self::SHUFFLED_ASSETS_PATH));
+    }
+
+    /**
+     * @param array<string, mixed> $metadata
+     */
+    public function storeShuffledMetadata(int $tokenId, array $metadata): void
+    {
+        FileSystem::write(
+            $this->buildS3Path(self::SHUFFLED_METADATA_PATH.'/'.$tokenId.'.json'),
+            Json::encode($metadata, Json::PRETTY),
+            null,
+        );
+    }
+
+    public function storeShuffledAsset(int $tokenId, SplFileInfo $originalAsset): void
+    {
+        FileSystem::copy(
+            $originalAsset->getPathname(),
+            $this->buildS3Path(self::SHUFFLED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension),
+        );
+    }
+
     private function buildS3Path(string $relativePath): string
     {
         $keyPrefix = empty($this->objectsKeyPrefix) ? '' : trim($this->objectsKeyPrefix, '/').'/';

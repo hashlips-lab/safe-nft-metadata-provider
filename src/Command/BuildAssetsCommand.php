@@ -14,14 +14,11 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Service\CollectionManager;
-use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -32,60 +29,33 @@ use Symfony\Component\Filesystem\Filesystem;
 )]
 class BuildAssetsCommand extends Command
 {
-    /**
-     * @var string
-     */
-    private const OUTPUT_PATH = 'output-path';
-
     public function __construct(
         private readonly CollectionManager $collectionManager,
-        private readonly Filesystem $filesystem,
         string $name = null,
     ) {
         parent::__construct($name);
     }
 
-    protected function configure(): void
-    {
-        $this
-            ->addArgument(
-                self::OUTPUT_PATH,
-                InputArgument::REQUIRED,
-                'The output path for the new files (local paths only)',
-            )
-        ;
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
-        $outputPath = $input->getArgument(self::OUTPUT_PATH);
 
-        if (! is_string($outputPath) || strlen($outputPath) <= 0) {
-            throw new RuntimeException('Invalid output path.');
+        if (! $symfonyStyle->confirm(
+            "I'm about to delete the shuffled assets directory and its content. Are you sure?",
+            false,
+        )) {
+            $symfonyStyle->warning('Aborting...');
+
+            return Command::SUCCESS;
         }
 
-        if (is_dir($outputPath)) {
-            if (! $symfonyStyle->confirm(
-                "I'm about to delete the output directory and its content. Are you sure?",
-                false,
-            )) {
-                $symfonyStyle->warning('Aborting...');
-
-                return Command::SUCCESS;
-            }
-
-            $this->filesystem->remove($outputPath);
-            $this->filesystem->mkdir($outputPath);
-        }
+        $this->collectionManager->clearShuffledAssets();
 
         $symfonyStyle->progressStart($this->collectionManager->getMaxTokenId());
 
         foreach (range(1, $this->collectionManager->getMaxTokenId()) as $tokenId) {
-            $this->filesystem->copy(
-                $this->collectionManager->getAssetFileInfo($tokenId)->getPathname(),
-                $outputPath.'/'.$tokenId.'.'.$this->collectionManager->getAssetsExtension(),
-            );
+            $this->collectionManager->storeShuffledAsset($tokenId);
+            gc_collect_cycles();
 
             $symfonyStyle->progressAdvance();
         }

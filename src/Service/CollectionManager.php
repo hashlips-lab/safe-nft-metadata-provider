@@ -143,6 +143,29 @@ final class CollectionManager
         return $this->collectionFilesystemDriver->getShuffleMapping();
     }
 
+    public function clearShuffledMetadata(): void
+    {
+        $this->collectionFilesystemDriver->clearShuffledMetadata();
+    }
+
+    public function clearShuffledAssets(): void
+    {
+        $this->collectionFilesystemDriver->clearShuffledAssets();
+    }
+
+    public function storeShuffledMetadata(int $tokenId, string $uriPrefix): void
+    {
+        $this->collectionFilesystemDriver->storeShuffledMetadata(
+            $tokenId,
+            $this->getMetadata($tokenId, $uriPrefix.'/'.$tokenId.'.json'),
+        );
+    }
+
+    public function storeShuffledAsset(int $tokenId): void
+    {
+        $this->collectionFilesystemDriver->storeShuffledAsset($tokenId, $this->getAssetFileInfo($tokenId));
+    }
+
     private function getMappedTokenId(int $tokenId): int
     {
         $shuffleMapping = $this->collectionFilesystemDriver->getShuffleMapping();

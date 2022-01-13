@@ -129,4 +129,34 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
     {
         FileSystem::write($this->localCollectionPath.self::MAPPING_PATH, Json::encode($newShuffleMapping));
     }
+
+    public function clearShuffledMetadata(): void
+    {
+        FileSystem::delete($this->localCollectionPath.self::SHUFFLED_METADATA_PATH);
+    }
+
+    public function clearShuffledAssets(): void
+    {
+        FileSystem::delete($this->localCollectionPath.self::SHUFFLED_ASSETS_PATH);
+    }
+
+    /**
+     * @param array<string, mixed> $metadata
+     */
+    public function storeShuffledMetadata(int $tokenId, array $metadata): void
+    {
+        FileSystem::write(
+            $this->localCollectionPath.self::SHUFFLED_METADATA_PATH.'/'.$tokenId.'.json',
+            Json::encode($metadata, Json::PRETTY),
+            null,
+        );
+    }
+
+    public function storeShuffledAsset(int $tokenId, SplFileInfo $originalAsset): void
+    {
+        FileSystem::copy(
+            $originalAsset->getPathname(),
+            $this->localCollectionPath.self::SHUFFLED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension,
+        );
+    }
 }
