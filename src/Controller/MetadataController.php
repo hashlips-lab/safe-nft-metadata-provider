@@ -42,7 +42,7 @@ final class MetadataController extends AbstractNftController
     /**
      * @var string
      */
-    private const CACHE_HIDDEN_METADATA = 'collection_manager.hidden_metadata';
+    private const CACHE_HIDDEN_METADATA = 'metadata_controller.hidden_metadata';
 
     public function __invoke(int $tokenId): Response
     {
