@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Contract\TotalSupplyProviderInterface;
+use App\TotalSupplyProvider\CachedTotalSupplyProvider;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,7 +30,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TotalSupplyCommand extends Command
 {
     public function __construct(
-        private readonly TotalSupplyProviderInterface $totalSupplyProvider,
+        private readonly CachedTotalSupplyProvider $cachedTotalSupplyProvider,
         string $name = null,
     ) {
         parent::__construct($name);
@@ -40,7 +40,7 @@ class TotalSupplyCommand extends Command
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
 
-        $symfonyStyle->success('Current total supply: '.$this->totalSupplyProvider->getTotalSupply());
+        $symfonyStyle->success('Current total supply: '.$this->cachedTotalSupplyProvider->getTotalSupply().' (cached)');
 
         return Command::SUCCESS;
     }
