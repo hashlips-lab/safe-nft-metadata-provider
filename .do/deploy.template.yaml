@@ -43,7 +43,7 @@ spec:
           scope: RUN_TIME
         - key: WEB3_SMART_CONTRACT_ADDRESS
           scope: RUN_TIME
-          value: 0xaDC28cac9c1d53cC7457b11CC9423903dc09DDDc
+          value: 0xYOUR_CONTRACT_ADDRESS
         - key: WEB3_HTTP_ENDPOINT
           scope: RUN_TIME
           type: SECRET

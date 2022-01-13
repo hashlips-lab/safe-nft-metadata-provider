@@ -12,4 +12,5 @@ I suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095
 By using my link you will be given a 100$ credit on DigitalOcean: https://m.do.co/c/bcc172152095
 
 You can also do a one-click deployment on DigitalOcean:
+
 [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/liarco-network/safe-nft-metadata-provider/tree/main)

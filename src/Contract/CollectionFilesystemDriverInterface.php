@@ -23,12 +23,12 @@ interface CollectionFilesystemDriverInterface
     /**
      * @var string
      */
-    final public const ASSETS_PATH = '/assets';
+    final public const METADATA_PATH = '/metadata';
 
     /**
      * @var string
      */
-    final public const METADATA_PATH = '/metadata';
+    final public const ASSETS_PATH = '/assets';
 
     /**
      * @var string
@@ -49,6 +49,16 @@ interface CollectionFilesystemDriverInterface
      * @var string
      */
     final public const MAPPING_PATH = '/mapping.json';
+
+    /**
+     * @var string
+     */
+    final public const SHUFFLED_METADATA_PATH = '/shuffled/metadata';
+
+    /**
+     * @var string
+     */
+    final public const SHUFFLED_ASSETS_PATH = '/shuffled/assets';
 
     public function getAssetsExtension(): string;
 
@@ -82,4 +92,15 @@ interface CollectionFilesystemDriverInterface
      * @param int[] $newShuffleMapping
      */
     public function storeNewShuffleMapping(array $newShuffleMapping): void;
+
+    public function clearShuffledMetadata(): void;
+
+    public function clearShuffledAssets(): void;
+
+    /**
+     * @param array<string, mixed> $metadata
+     */
+    public function storeShuffledMetadata(int $tokenId, array $metadata): void;
+
+    public function storeShuffledAsset(int $tokenId, SplFileInfo $originalAsset): void;
 }
