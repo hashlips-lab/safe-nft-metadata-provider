@@ -75,7 +75,7 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
      */
     public function getMetadata(int $tokenId): array
     {
-        $metadataPath = $this->buildS3Path(self::METADATA_PATH.'/'.$tokenId.'.json');
+        $metadataPath = $this->generateS3Path(self::METADATA_PATH.'/'.$tokenId.'.json');
         $metadata = Json::decode(FileSystem::read($metadataPath), Json::FORCE_ARRAY);
 
         if (! is_array($metadata)) {
@@ -89,7 +89,7 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 
     public function getAssetFileInfo(int $tokenId): SplFileInfo
     {
-        return new File($this->buildS3Path(self::ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension));
+        return new File($this->generateS3Path(self::ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension));
     }
 
     /**
@@ -97,7 +97,10 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
      */
     public function getHiddenMetadata(): array
     {
-        $metadata = Json::decode(FileSystem::read($this->buildS3Path(self::HIDDEN_METADATA_PATH)), Json::FORCE_ARRAY);
+        $metadata = Json::decode(
+            FileSystem::read($this->generateS3Path(self::HIDDEN_METADATA_PATH)),
+            Json::FORCE_ARRAY,
+        );
 
         if (! is_array($metadata)) {
             throw new LogicException('Unexpected metadata value (it must be an array).');
@@ -110,7 +113,7 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 
     public function getHiddenAssetFileInfo(): SplFileInfo
     {
-        return new File($this->buildS3Path(self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension));
+        return new File($this->generateS3Path(self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension));
     }
 
     /**
@@ -118,7 +121,7 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
      */
     public function getAbi(): array
     {
-        $abi = Json::decode(FileSystem::read($this->buildS3Path(self::ABI_PATH)));
+        $abi = Json::decode(FileSystem::read($this->generateS3Path(self::ABI_PATH)));
 
         if (! is_array($abi)) {
             throw new LogicException('Unexpected ABI value (it must be an array).');
@@ -132,7 +135,7 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
     public function getShuffleMapping(): ?array
     {
         if (empty($this->shuffleMapping)) {
-            $mappingPath = $this->buildS3Path(self::MAPPING_PATH);
+            $mappingPath = $this->generateS3Path(self::MAPPING_PATH);
 
             if (! is_file($mappingPath)) {
                 return null;
@@ -149,40 +152,40 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 
     public function storeNewShuffleMapping(array $newShuffleMapping): void
     {
-        FileSystem::write($this->buildS3Path(self::MAPPING_PATH), Json::encode($newShuffleMapping), null);
+        FileSystem::write($this->generateS3Path(self::MAPPING_PATH), Json::encode($newShuffleMapping), null);
     }
 
-    public function clearShuffledMetadata(): void
+    public function clearExportedMetadata(): void
     {
-        FileSystem::delete($this->buildS3Path(self::SHUFFLED_METADATA_PATH));
+        FileSystem::delete($this->generateS3Path(self::EXPORTED_METADATA_PATH));
     }
 
-    public function clearShuffledAssets(): void
+    public function clearExportedAssets(): void
     {
-        FileSystem::delete($this->buildS3Path(self::SHUFFLED_ASSETS_PATH));
+        FileSystem::delete($this->generateS3Path(self::EXPORTED_ASSETS_PATH));
     }
 
     /**
      * @param array<string, mixed> $metadata
      */
-    public function storeShuffledMetadata(int $tokenId, array $metadata): void
+    public function storeExportedMetadata(int $tokenId, array $metadata): void
     {
         FileSystem::write(
-            $this->buildS3Path(self::SHUFFLED_METADATA_PATH.'/'.$tokenId.'.json'),
+            $this->generateS3Path(self::EXPORTED_METADATA_PATH.'/'.$tokenId.'.json'),
             Json::encode($metadata, Json::PRETTY),
             null,
         );
     }
 
-    public function storeShuffledAsset(int $tokenId, SplFileInfo $originalAsset): void
+    public function storeExportedAsset(int $tokenId, SplFileInfo $originalAsset): void
     {
         FileSystem::copy(
             $originalAsset->getPathname(),
-            $this->buildS3Path(self::SHUFFLED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension),
+            $this->generateS3Path(self::EXPORTED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension),
         );
     }
 
-    private function buildS3Path(string $relativePath): string
+    private function generateS3Path(string $relativePath): string
     {
         $keyPrefix = empty($this->objectsKeyPrefix) ? '' : trim($this->objectsKeyPrefix, '/').'/';
 

@@ -20,7 +20,6 @@ use App\Exception\InvalidTokenIdException;
 use App\Exception\InvalidTokensRangeException;
 use LogicException;
 use SplFileInfo;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -43,7 +42,6 @@ final class CollectionManager
         private readonly iterable $metadataUpdaters,
         private readonly CollectionFilesystemDriverInterface $collectionFilesystemDriver,
         private readonly CacheInterface $cache,
-        private readonly ParameterBagInterface $parameterBag,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -67,8 +65,6 @@ final class CollectionManager
         shuffle($range);
 
         $this->collectionFilesystemDriver->storeNewShuffleMapping(array_merge($beforeRange, $range, $afterRange));
-
-        $this->cache->delete(self::CACHE_MAPPING);
     }
 
     /**
@@ -138,8 +134,6 @@ final class CollectionManager
     public function getShuffleMapping(): ?array
     {
         $shuffleMapping = $this->cache->get(self::CACHE_MAPPING, function (ItemInterface $item): ?array {
-            $item->expiresAfter((int) $this->parameterBag->get('app.cache_expiration'));
-
             return $this->collectionFilesystemDriver->getShuffleMapping();
         });
 
@@ -150,27 +144,27 @@ final class CollectionManager
         return $shuffleMapping;
     }
 
-    public function clearShuffledMetadata(): void
+    public function clearExportedMetadata(): void
     {
-        $this->collectionFilesystemDriver->clearShuffledMetadata();
+        $this->collectionFilesystemDriver->clearExportedMetadata();
     }
 
-    public function clearShuffledAssets(): void
+    public function clearExportedAssets(): void
     {
-        $this->collectionFilesystemDriver->clearShuffledAssets();
+        $this->collectionFilesystemDriver->clearExportedAssets();
     }
 
-    public function storeShuffledMetadata(int $tokenId, string $uriPrefix): void
+    public function storeExportedMetadata(int $tokenId, string $uriPrefix): void
     {
-        $this->collectionFilesystemDriver->storeShuffledMetadata(
+        $this->collectionFilesystemDriver->storeExportedMetadata(
             $tokenId,
             $this->getMetadata($tokenId, $uriPrefix.'/'.$tokenId.'.json'),
         );
     }
 
-    public function storeShuffledAsset(int $tokenId): void
+    public function storeExportedAsset(int $tokenId): void
     {
-        $this->collectionFilesystemDriver->storeShuffledAsset($tokenId, $this->getAssetFileInfo($tokenId));
+        $this->collectionFilesystemDriver->storeExportedAsset($tokenId, $this->getAssetFileInfo($tokenId));
     }
 
     private function getMappedTokenId(int $tokenId): int

@@ -26,10 +26,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Marco Lipparini <developer@liarco.net>
  */
 #[AsCommand(
-    name: 'nft:build-metadata',
-    description: 'Builds a new metadata folder with all files shuffled using the current mapping',
+    name: 'nft:export-metadata',
+    description: 'Exports a new metadata folder with all the files updating and shuffling them using the current mapping (if any)',
 )]
-class BuildMetadataCommand extends Command
+class ExportMetadataCommand extends Command
 {
     /**
      * @var string
@@ -49,7 +49,7 @@ class BuildMetadataCommand extends Command
             ->addArgument(
                 self::URI_PREFIX,
                 InputArgument::REQUIRED,
-                'The URI prefix where the assets have been uploaded to',
+                'The URI prefix where the exported assets have been uploaded to',
             )
         ;
     }
@@ -64,7 +64,7 @@ class BuildMetadataCommand extends Command
         }
 
         if (! $symfonyStyle->confirm(
-            "I'm about to delete the shuffled metadata directory and its content. Are you sure?",
+            "I'm about to delete the exported metadata directory and its content. Are you sure?",
             false,
         )) {
             $symfonyStyle->warning('Aborting...');
@@ -72,12 +72,14 @@ class BuildMetadataCommand extends Command
             return Command::SUCCESS;
         }
 
-        $this->collectionManager->clearShuffledMetadata();
+        $symfonyStyle->info('Deleting old data...');
+        $this->collectionManager->clearExportedMetadata();
 
+        $symfonyStyle->info('Exporting new data...');
         $symfonyStyle->progressStart($this->collectionManager->getMaxTokenId());
 
         foreach (range(1, $this->collectionManager->getMaxTokenId()) as $tokenId) {
-            $this->collectionManager->storeShuffledMetadata($tokenId, trim($uriPrefix, '/'));
+            $this->collectionManager->storeExportedMetadata($tokenId, trim($uriPrefix, '/'));
             gc_collect_cycles();
 
             $symfonyStyle->progressAdvance();
@@ -85,7 +87,7 @@ class BuildMetadataCommand extends Command
 
         $symfonyStyle->progressFinish();
 
-        $symfonyStyle->success('Metadata built successfully!');
+        $symfonyStyle->success('Metadata exported successfully!');
 
         return Command::SUCCESS;
     }
