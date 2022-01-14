@@ -24,10 +24,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Marco Lipparini <developer@liarco.net>
  */
 #[AsCommand(
-    name: 'nft:build-assets',
-    description: 'Builds a new assets folder with all files shuffled using the current mapping',
+    name: 'nft:export-assets',
+    description: 'Exports a new assets folder with all the files shuffling them using the current mapping (if any)',
 )]
-class BuildAssetsCommand extends Command
+class ExportAssetsCommand extends Command
 {
     public function __construct(
         private readonly CollectionManager $collectionManager,
@@ -41,7 +41,7 @@ class BuildAssetsCommand extends Command
         $symfonyStyle = new SymfonyStyle($input, $output);
 
         if (! $symfonyStyle->confirm(
-            "I'm about to delete the shuffled assets directory and its content. Are you sure?",
+            "I'm about to delete the exported assets directory and its content. Are you sure?",
             false,
         )) {
             $symfonyStyle->warning('Aborting...');
@@ -49,12 +49,14 @@ class BuildAssetsCommand extends Command
             return Command::SUCCESS;
         }
 
-        $this->collectionManager->clearShuffledAssets();
+        $symfonyStyle->info('Deleting old data...');
+        $this->collectionManager->clearExportedAssets();
 
+        $symfonyStyle->info('Exporting new data...');
         $symfonyStyle->progressStart($this->collectionManager->getMaxTokenId());
 
         foreach (range(1, $this->collectionManager->getMaxTokenId()) as $tokenId) {
-            $this->collectionManager->storeShuffledAsset($tokenId);
+            $this->collectionManager->storeExportedAsset($tokenId);
             gc_collect_cycles();
 
             $symfonyStyle->progressAdvance();
@@ -62,7 +64,7 @@ class BuildAssetsCommand extends Command
 
         $symfonyStyle->progressFinish();
 
-        $symfonyStyle->success('Assets built successfully!');
+        $symfonyStyle->success('Assets exported successfully!');
 
         return Command::SUCCESS;
     }

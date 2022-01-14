@@ -130,33 +130,33 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
         FileSystem::write($this->localCollectionPath.self::MAPPING_PATH, Json::encode($newShuffleMapping));
     }
 
-    public function clearShuffledMetadata(): void
+    public function clearExportedMetadata(): void
     {
-        FileSystem::delete($this->localCollectionPath.self::SHUFFLED_METADATA_PATH);
+        FileSystem::delete($this->localCollectionPath.self::EXPORTED_METADATA_PATH);
     }
 
-    public function clearShuffledAssets(): void
+    public function clearExportedAssets(): void
     {
-        FileSystem::delete($this->localCollectionPath.self::SHUFFLED_ASSETS_PATH);
+        FileSystem::delete($this->localCollectionPath.self::EXPORTED_ASSETS_PATH);
     }
 
     /**
      * @param array<string, mixed> $metadata
      */
-    public function storeShuffledMetadata(int $tokenId, array $metadata): void
+    public function storeExportedMetadata(int $tokenId, array $metadata): void
     {
         FileSystem::write(
-            $this->localCollectionPath.self::SHUFFLED_METADATA_PATH.'/'.$tokenId.'.json',
+            $this->localCollectionPath.self::EXPORTED_METADATA_PATH.'/'.$tokenId.'.json',
             Json::encode($metadata, Json::PRETTY),
             null,
         );
     }
 
-    public function storeShuffledAsset(int $tokenId, SplFileInfo $originalAsset): void
+    public function storeExportedAsset(int $tokenId, SplFileInfo $originalAsset): void
     {
         FileSystem::copy(
             $originalAsset->getPathname(),
-            $this->localCollectionPath.self::SHUFFLED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension,
+            $this->localCollectionPath.self::EXPORTED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension,
         );
     }
 }

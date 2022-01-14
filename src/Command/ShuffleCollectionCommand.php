@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Service\CollectionManager;
+use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 #[AsCommand(
     name: 'nft:shuffle-collection',
-    description: 'Generates a new shuffle mapping for all the tokens (or the given range)',
+    description: 'Generates a new shuffle mapping for all the tokens (or a given range)',
 )]
 class ShuffleCollectionCommand extends Command
 {
@@ -75,7 +77,7 @@ class ShuffleCollectionCommand extends Command
         ) ? (int) $maxTokenIdOptionValue : $this->collectionManager->getMaxTokenId();
 
         if (! $symfonyStyle->confirm(
-            'You are about to shuffle your collection starting from token #'.$minTokenId.' up to token #'.$maxTokenId.'. This will overwrite the previous shuffle mapping. Are you sure?',
+            "I'm about to generate a new shuffle mapping for your collection starting from token #".$minTokenId.' up to token #'.$maxTokenId.'. This will overwrite the previous shuffle mapping. Are you sure?',
             false,
         )) {
             $symfonyStyle->warning('Aborting...');
@@ -85,9 +87,24 @@ class ShuffleCollectionCommand extends Command
 
         $this->collectionManager->shuffle($minTokenId, $maxTokenId);
 
-        $symfonyStyle->success('Collection shuffled successfully!');
+        $symfonyStyle->info('The new shuffle mapping has been generated and added to the storage...');
 
-        $symfonyStyle->info('Remember to run "bin/console cache:clear" to invalidate metadata cache!');
+        // Clear app cache...
+        $symfonyStyle->info('Running "bin/console cache:clear"...');
+
+        $command = $this->getApplication()?->find('cache:clear');
+
+        if (! $command instanceof Command) {
+            throw new RuntimeException('Could not find the "cache:clear" command.');
+        }
+
+        $returnCode = $command->run(new ArrayInput([]), $output);
+
+        if (Command::SUCCESS !== $returnCode) {
+            throw new RuntimeException('An error occurred while clearing the cache.');
+        }
+
+        $symfonyStyle->success('New shuffle mapping generated successfully!');
 
         return Command::SUCCESS;
     }

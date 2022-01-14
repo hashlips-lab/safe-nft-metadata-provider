@@ -53,12 +53,12 @@ interface CollectionFilesystemDriverInterface
     /**
      * @var string
      */
-    final public const SHUFFLED_METADATA_PATH = '/shuffled/metadata';
+    final public const EXPORTED_METADATA_PATH = '/exported/metadata';
 
     /**
      * @var string
      */
-    final public const SHUFFLED_ASSETS_PATH = '/shuffled/assets';
+    final public const EXPORTED_ASSETS_PATH = '/exported/assets';
 
     public function getAssetsExtension(): string;
 
@@ -93,14 +93,14 @@ interface CollectionFilesystemDriverInterface
      */
     public function storeNewShuffleMapping(array $newShuffleMapping): void;
 
-    public function clearShuffledMetadata(): void;
+    public function clearExportedMetadata(): void;
 
-    public function clearShuffledAssets(): void;
+    public function clearExportedAssets(): void;
 
     /**
      * @param array<string, mixed> $metadata
      */
-    public function storeShuffledMetadata(int $tokenId, array $metadata): void;
+    public function storeExportedMetadata(int $tokenId, array $metadata): void;
 
-    public function storeShuffledAsset(int $tokenId, SplFileInfo $originalAsset): void;
+    public function storeExportedAsset(int $tokenId, SplFileInfo $originalAsset): void;
 }
