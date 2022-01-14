@@ -71,16 +71,6 @@ final class CollectionManager
         $this->cache->delete(self::CACHE_MAPPING);
     }
 
-    public function getAssetsExtension(): string
-    {
-        return $this->collectionFilesystemDriver->getAssetsExtension();
-    }
-
-    public function getHiddenAssetExtension(): string
-    {
-        return $this->collectionFilesystemDriver->getHiddenAssetExtension();
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -96,6 +86,7 @@ final class CollectionManager
                     RouteName::GET_ASSET,
                     [
                         'tokenId' => $tokenId,
+                        '_format' => $this->collectionFilesystemDriver->getAssetsExtension(),
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL,
                 ),
@@ -119,7 +110,9 @@ final class CollectionManager
 
         $hiddenMetadata['image'] = $assetUri ?? $this->urlGenerator->generate(
             RouteName::GET_HIDDEN_ASSET,
-            [],
+            [
+                '_format' => $this->collectionFilesystemDriver->getHiddenAssetExtension(),
+            ],
             UrlGeneratorInterface::ABSOLUTE_URL,
         );
 
