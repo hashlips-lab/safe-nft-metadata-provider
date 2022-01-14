@@ -34,9 +34,4 @@ class RouteName
      * @var string
      */
     final public const GET_METADATA = 'get_metadata';
-
-    /**
-     * @var string
-     */
-    final public const GET_TOTAL_SUPPLY = 'get_total_supply';
 }
