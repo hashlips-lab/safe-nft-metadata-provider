@@ -16,19 +16,14 @@ namespace App\MetadataUpdater;
 use App\Contract\MetadataUpdaterInterface;
 
 /**
- * This is an example custom metadata updater for the SABC collection.
- *
- * It updates the following properties using the new token ID:
- *  - name
- *  - edition
+ * This is an example metadata updater. It updates the token name using the new token ID.
  *
  * @author Marco Lipparini <developer@liarco.net>
  */
-final class SabcMetadataUpdater implements MetadataUpdaterInterface
+final class CustomMetadataUpdater implements MetadataUpdaterInterface
 {
     public function updateMetadata(array &$metadata, int $tokenId, string $assetUri): void
     {
-        $metadata['name'] = 'SABC #'.$tokenId;
-        $metadata['edition'] = $tokenId;
+        $metadata['name'] = 'My awesome token #'.$tokenId;
     }
 }
