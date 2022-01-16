@@ -16,8 +16,7 @@ namespace App\MetadataUpdater;
 use App\Contract\MetadataUpdaterInterface;
 
 /**
- * This is an example metadata updater.
- * It updates the token name using the new token ID.
+ * This is an example metadata updater. It updates the token name using the new token ID.
  *
  * @author Marco Lipparini <developer@liarco.net>
  */
