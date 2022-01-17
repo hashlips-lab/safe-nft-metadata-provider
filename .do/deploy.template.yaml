@@ -12,13 +12,13 @@ spec:
           value: prod
         - key: COLLECTION_IS_REVEALED
           scope: RUN_TIME
-          value: false
+          value: 'false'
         - key: COLLECTION_WEBSITE
           scope: RUN_TIME
           value: https://www.example.com
         - key: COLLECTION_MAX_SUPPLY
           scope: RUN_TIME
-          value: "10000"
+          value: '10000'
         - key: COLLECTION_ASSETS_EXTENSION
           scope: RUN_TIME
           value: png
@@ -27,7 +27,7 @@ spec:
           value: gif
         - key: CACHE_EXPIRATION
           scope: RUN_TIME
-          value: "600"
+          value: '600'
         - key: S3_FS_DRIVER_REGION
           scope: RUN_TIME
           value: fra1
