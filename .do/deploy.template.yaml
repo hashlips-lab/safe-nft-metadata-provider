@@ -10,6 +10,9 @@ spec:
         - key: APP_ENV
           scope: RUN_AND_BUILD_TIME
           value: prod
+        - key: COLLECTION_IS_REVEALED
+          scope: RUN_TIME
+          value: false
         - key: COLLECTION_WEBSITE
           scope: RUN_TIME
           value: https://www.example.com
