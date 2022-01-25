@@ -2,6 +2,9 @@
 
 A simple yet powerful HTTP metadata and assets provider for NFT collections using [Symfony](https://www.symfony.com).
 
+## Disclaimer
+This project was created for educational purposes, please refer to the [LICENCE](LICENSE) file for further information.
+
 ## Main features
 - hide metadata for unminted tokens
 - update the total supply in many ways _(manually, OpenSea API, Web3 or even your own implementation...)_
@@ -29,4 +32,4 @@ By using the following referral link you will be given a 100$ credit on DigitalO
 
 You can also do a one-click deployment on DigitalOcean:
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/liarco-network/safe-nft-metadata-provider/tree/main)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/main)

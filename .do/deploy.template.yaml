@@ -57,7 +57,7 @@ spec:
       github:
         branch: main
         deploy_on_push: true
-        repo: liarco-network/safe-nft-metadata-provider
+        repo: hashlips-lab/safe-nft-metadata-provider
       http_port: 8080
       instance_count: 1
       instance_size_slug: basic-xxs
