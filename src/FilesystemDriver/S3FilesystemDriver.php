@@ -14,18 +14,25 @@ declare(strict_types=1);
 namespace App\FilesystemDriver;
 
 use App\Contract\CollectionFilesystemDriverInterface;
+use App\FilesystemDriver\S3\FileObject;
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
+use GuzzleHttp\Psr7\Stream;
 use LogicException;
-use Nette\Utils\FileSystem;
 use Nette\Utils\Json;
-use SplFileInfo;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
  */
 final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 {
+    /**
+     * @var string
+     */
+    private const KEY_NOT_FOUND_ERROR_CODE = 'NoSuchKey';
+
     private readonly S3Client $s3Client;
 
     /**
@@ -56,8 +63,6 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
                 'timeout' => 10,
             ],
         ]);
-
-        $this->s3Client->registerStreamWrapper();
     }
 
     public function getAssetsExtension(): string
@@ -75,30 +80,8 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
      */
     public function getMetadata(int $tokenId): array
     {
-        $metadataPath = $this->generateS3Path(self::METADATA_PATH.'/'.$tokenId.'.json');
-        $metadata = Json::decode(FileSystem::read($metadataPath), Json::FORCE_ARRAY);
-
-        if (! is_array($metadata)) {
-            throw new LogicException('Unexpected metadata value (it must be an array).');
-        }
-
-        /** @var array<string, mixed> $metadata */
-
-        return $metadata;
-    }
-
-    public function getAssetFileInfo(int $tokenId): SplFileInfo
-    {
-        return new File($this->generateS3Path(self::ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getHiddenMetadata(): array
-    {
         $metadata = Json::decode(
-            FileSystem::read($this->generateS3Path(self::HIDDEN_METADATA_PATH)),
+            $this->getObject(self::METADATA_PATH.'/'.$tokenId.'.json')->contents,
             Json::FORCE_ARRAY,
         );
 
@@ -111,9 +94,58 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
         return $metadata;
     }
 
-    public function getHiddenAssetFileInfo(): SplFileInfo
+    public function getAssetResponse(int $tokenId): Response
     {
-        return new File($this->generateS3Path(self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension));
+        $object = $this->getObject(self::ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension);
+        $response = new Response(
+            $object->contents,
+            200,
+            [
+                'Content-Type' => $object->contentType,
+            ],
+        );
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_INLINE,
+            $tokenId.'.'.$this->assetsExtension,
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getHiddenMetadata(): array
+    {
+        $metadata = Json::decode($this->getObject(self::HIDDEN_METADATA_PATH)->contents, Json::FORCE_ARRAY);
+
+        if (! is_array($metadata)) {
+            throw new LogicException('Unexpected metadata value (it must be an array).');
+        }
+
+        /** @var array<string, mixed> $metadata */
+
+        return $metadata;
+    }
+
+    public function getHiddenAssetResponse(): Response
+    {
+        $object = $this->getObject(self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension);
+        $response = new Response(
+            $object->contents,
+            200,
+            [
+                'Content-Type' => $object->contentType,
+            ],
+        );
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_INLINE,
+            'hidden.'.$this->hiddenAssetExtension,
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
     }
 
     /**
@@ -121,7 +153,7 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
      */
     public function getAbi(): array
     {
-        $abi = Json::decode(FileSystem::read($this->generateS3Path(self::ABI_PATH)));
+        $abi = Json::decode($this->getObject(self::ABI_PATH)->contents);
 
         if (! is_array($abi)) {
             throw new LogicException('Unexpected ABI value (it must be an array).');
@@ -135,16 +167,19 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
     public function getShuffleMapping(): ?array
     {
         if (empty($this->shuffleMapping)) {
-            $mappingPath = $this->generateS3Path(self::MAPPING_PATH);
+            try {
+                /** @var int[] $shuffleMappingData */
+                $shuffleMappingData = Json::decode(
+                    $this->getObject(self::MAPPING_PATH)->contents,
+                    Json::FORCE_ARRAY,
+                );
 
-            if (! is_file($mappingPath)) {
-                return null;
+                $this->shuffleMapping = $shuffleMappingData;
+            } catch (S3Exception $s3Exception) {
+                if (self::KEY_NOT_FOUND_ERROR_CODE === $s3Exception->getAwsErrorCode()) {
+                    return null;
+                }
             }
-
-            /** @var int[] $shuffleMappingData */
-            $shuffleMappingData = Json::decode(FileSystem::read($mappingPath), Json::FORCE_ARRAY);
-
-            $this->shuffleMapping = $shuffleMappingData;
         }
 
         return $this->shuffleMapping;
@@ -152,17 +187,17 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 
     public function storeNewShuffleMapping(array $newShuffleMapping): void
     {
-        FileSystem::write($this->generateS3Path(self::MAPPING_PATH), Json::encode($newShuffleMapping), null);
+        $this->putObject(self::MAPPING_PATH, Json::encode($newShuffleMapping));
     }
 
     public function clearExportedMetadata(): void
     {
-        FileSystem::delete($this->generateS3Path(self::EXPORTED_METADATA_PATH));
+        $this->s3Client->deleteMatchingObjects($this->bucketName, trim(self::EXPORTED_METADATA_PATH, '/'));
     }
 
     public function clearExportedAssets(): void
     {
-        FileSystem::delete($this->generateS3Path(self::EXPORTED_ASSETS_PATH));
+        $this->s3Client->deleteMatchingObjects($this->bucketName, trim(self::EXPORTED_ASSETS_PATH, '/'));
     }
 
     /**
@@ -170,25 +205,68 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
      */
     public function storeExportedMetadata(int $tokenId, array $metadata): void
     {
-        FileSystem::write(
-            $this->generateS3Path(self::EXPORTED_METADATA_PATH.'/'.$tokenId.'.json'),
-            Json::encode($metadata, Json::PRETTY),
-            null,
-        );
+        $this->putObject(self::EXPORTED_METADATA_PATH.'/'.$tokenId.'.json', Json::encode($metadata, Json::PRETTY));
     }
 
-    public function storeExportedAsset(int $tokenId, SplFileInfo $originalAsset): void
+    public function storeExportedAsset(int $sourceTokenId, int $targetTokenId): void
     {
-        FileSystem::copy(
-            $originalAsset->getPathname(),
-            $this->generateS3Path(self::EXPORTED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension),
+        $this->copyObject(
+            self::ASSETS_PATH.'/'.$sourceTokenId.'.'.$this->assetsExtension,
+            self::EXPORTED_ASSETS_PATH.'/'.$targetTokenId.'.'.$this->assetsExtension,
         );
     }
 
-    private function generateS3Path(string $relativePath): string
+    private function getObject(string $relativePath): FileObject
+    {
+        $result = $this->s3Client->getObject($this->generateArgs($relativePath));
+
+        $body = $result['Body'];
+        $contentType = $result['ContentType'];
+
+        if (! $body instanceof Stream) {
+            throw new LogicException('Unexpected "Body"" type, it should be a "GuzzleHttp\Psr7\Stream".');
+        }
+
+        if (! is_string($contentType)) {
+            throw new LogicException('Unexpected "ContentType" type, it should be a string.');
+        }
+
+        return new FileObject($contentType, $body->getContents());
+    }
+
+    private function putObject(string $relativePath, string $contents): void
+    {
+        $args = $this->generateArgs($relativePath);
+
+        $args['Body'] = $contents;
+
+        $this->s3Client->putObject($args);
+    }
+
+    private function copyObject(string $sourceRelativePath, string $targetRelativePath): void
+    {
+        $args = $this->generateArgs($targetRelativePath);
+
+        $args['CopySource'] = $this->bucketName.'/'.$this->generateAbsolutePath($sourceRelativePath);
+
+        $this->s3Client->copyObject($args);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function generateArgs(string $relativePath): array
+    {
+        return [
+            'Bucket' => $this->bucketName,
+            'Key' => $this->generateAbsolutePath($relativePath),
+        ];
+    }
+
+    private function generateAbsolutePath(string $relativePath): string
     {
         $keyPrefix = empty($this->objectsKeyPrefix) ? '' : trim($this->objectsKeyPrefix, '/').'/';
 
-        return 's3://'.$this->bucketName.'/'.$keyPrefix.trim($relativePath, '/');
+        return trim($keyPrefix.trim($relativePath, '/'), '/');
     }
 }

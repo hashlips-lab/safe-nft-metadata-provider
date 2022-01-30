@@ -19,10 +19,9 @@ use App\Contract\MetadataUpdaterInterface;
 use App\Exception\InvalidTokenIdException;
 use App\Exception\InvalidTokensRangeException;
 use LogicException;
-use SplFileInfo;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -33,6 +32,11 @@ final class CollectionManager
      * @var string
      */
     private const CACHE_MAPPING = 'collection_manager.mapping';
+
+    /**
+     * @var null|int[]
+     */
+    private ?array $shuffleMapping;
 
     /**
      * @param iterable<MetadataUpdaterInterface> $metadataUpdaters
@@ -92,9 +96,9 @@ final class CollectionManager
         return $metadata;
     }
 
-    public function getAssetFileInfo(int $tokenId): SplFileInfo
+    public function getAssetResponse(int $tokenId): Response
     {
-        return $this->collectionFilesystemDriver->getAssetFileInfo($this->getMappedTokenId($tokenId));
+        return $this->collectionFilesystemDriver->getAssetResponse($this->getMappedTokenId($tokenId));
     }
 
     /**
@@ -115,9 +119,9 @@ final class CollectionManager
         return $hiddenMetadata;
     }
 
-    public function getHiddenAssetFileInfo(): SplFileInfo
+    public function getHiddenAssetResponse(): Response
     {
-        return $this->collectionFilesystemDriver->getHiddenAssetFileInfo();
+        return $this->collectionFilesystemDriver->getHiddenAssetResponse();
     }
 
     /**
@@ -133,15 +137,19 @@ final class CollectionManager
      */
     public function getShuffleMapping(): ?array
     {
-        $shuffleMapping = $this->cache->get(self::CACHE_MAPPING, function (ItemInterface $item): ?array {
-            return $this->collectionFilesystemDriver->getShuffleMapping();
-        });
+        if (! isset($this->shuffleMapping)) {
+            $shuffleMapping = $this->cache->get(self::CACHE_MAPPING, function (): ?array {
+                return $this->collectionFilesystemDriver->getShuffleMapping();
+            });
 
-        if (! is_array($shuffleMapping) && null !== $shuffleMapping) {
-            throw new LogicException('Unexpected cache value (it must be an array or null).');
+            if (! is_array($shuffleMapping) && null !== $shuffleMapping) {
+                throw new LogicException('Unexpected cache value (it must be an array or null).');
+            }
+
+            $this->shuffleMapping = $shuffleMapping;
         }
 
-        return $shuffleMapping;
+        return $this->shuffleMapping;
     }
 
     public function clearExportedMetadata(): void
@@ -164,12 +172,12 @@ final class CollectionManager
 
     public function storeExportedAsset(int $tokenId): void
     {
-        $this->collectionFilesystemDriver->storeExportedAsset($tokenId, $this->getAssetFileInfo($tokenId));
+        $this->collectionFilesystemDriver->storeExportedAsset($this->getMappedTokenId($tokenId), $tokenId);
     }
 
     private function getMappedTokenId(int $tokenId): int
     {
-        $shuffleMapping = $this->collectionFilesystemDriver->getShuffleMapping();
+        $shuffleMapping = $this->getShuffleMapping();
 
         if (null === $shuffleMapping) {
             return $tokenId;

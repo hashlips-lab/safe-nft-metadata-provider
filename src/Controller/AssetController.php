@@ -16,7 +16,6 @@ namespace App\Controller;
 use App\Config\RouteName;
 use App\Contract\AbstractNftController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -37,12 +36,8 @@ final class AssetController extends AbstractNftController
             throw $this->createNotFoundException();
         }
 
-        return $this
-            ->file(
-                $this->collectionManager->getAssetFileInfo($tokenId),
-                null,
-                ResponseHeaderBag::DISPOSITION_INLINE,
-            )
+        return $this->collectionManager
+            ->getAssetResponse($tokenId)
             ->setPublic()
             ->setMaxAge($this->getDefaultCacheExpiration())
         ;
