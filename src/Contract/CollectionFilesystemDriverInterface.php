@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace App\Contract;
 
-use SplFileInfo;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -69,14 +69,14 @@ interface CollectionFilesystemDriverInterface
      */
     public function getMetadata(int $tokenId): array;
 
-    public function getAssetFileInfo(int $tokenId): SplFileInfo;
+    public function getAssetResponse(int $tokenId): Response;
 
     /**
      * @return array<string, mixed>
      */
     public function getHiddenMetadata(): array;
 
-    public function getHiddenAssetFileInfo(): SplFileInfo;
+    public function getHiddenAssetResponse(): Response;
 
     /**
      * @return object[]
@@ -102,5 +102,5 @@ interface CollectionFilesystemDriverInterface
      */
     public function storeExportedMetadata(int $tokenId, array $metadata): void;
 
-    public function storeExportedAsset(int $tokenId, SplFileInfo $originalAsset): void;
+    public function storeExportedAsset(int $sourceTokenId, int $targetTokenId): void;
 }

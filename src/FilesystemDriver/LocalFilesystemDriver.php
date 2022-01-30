@@ -17,8 +17,9 @@ use App\Contract\CollectionFilesystemDriverInterface;
 use LogicException;
 use Nette\Utils\FileSystem;
 use Nette\Utils\Json;
-use SplFileInfo;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author Marco Lipparini <developer@liarco.net>
@@ -64,9 +65,17 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
         return $metadata;
     }
 
-    public function getAssetFileInfo(int $tokenId): SplFileInfo
+    public function getAssetResponse(int $tokenId): Response
     {
-        return new File($this->localCollectionPath.self::ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension);
+        $binaryFileResponse = new BinaryFileResponse(
+            $this->localCollectionPath.self::ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension,
+        );
+        $binaryFileResponse->setContentDisposition(
+            HeaderUtils::DISPOSITION_INLINE,
+            $tokenId.'.'.$this->assetsExtension,
+        );
+
+        return $binaryFileResponse;
     }
 
     /**
@@ -86,9 +95,17 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
         return $metadata;
     }
 
-    public function getHiddenAssetFileInfo(): SplFileInfo
+    public function getHiddenAssetResponse(): Response
     {
-        return new File($this->localCollectionPath.self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension);
+        $binaryFileResponse = new BinaryFileResponse(
+            $this->localCollectionPath.self::HIDDEN_ASSET_PATH.$this->hiddenAssetExtension,
+        );
+        $binaryFileResponse->setContentDisposition(
+            HeaderUtils::DISPOSITION_INLINE,
+            'hidden.'.$this->assetsExtension,
+        );
+
+        return $binaryFileResponse;
     }
 
     /**
@@ -152,11 +169,11 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
         );
     }
 
-    public function storeExportedAsset(int $tokenId, SplFileInfo $originalAsset): void
+    public function storeExportedAsset(int $sourceTokenId, int $targetTokenId): void
     {
         FileSystem::copy(
-            $originalAsset->getPathname(),
-            $this->localCollectionPath.self::EXPORTED_ASSETS_PATH.'/'.$tokenId.'.'.$this->assetsExtension,
+            $this->localCollectionPath.self::ASSETS_PATH.'/'.$sourceTokenId.'.'.$this->assetsExtension,
+            $this->localCollectionPath.self::EXPORTED_ASSETS_PATH.'/'.$targetTokenId.'.'.$this->assetsExtension,
         );
     }
 }

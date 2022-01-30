@@ -16,7 +16,6 @@ namespace App\Controller;
 use App\Config\RouteName;
 use App\Contract\AbstractNftController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -33,8 +32,7 @@ final class HiddenAssetController extends AbstractNftController
 {
     public function __invoke(): Response
     {
-        return $this
-            ->file($this->collectionManager->getHiddenAssetFileInfo(), null, ResponseHeaderBag::DISPOSITION_INLINE)
+        return $this->collectionManager->getHiddenAssetResponse()
             ->setPublic()
             ->setMaxAge($this->getDefaultCacheExpiration())
         ;
