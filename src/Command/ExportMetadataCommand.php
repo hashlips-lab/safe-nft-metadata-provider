@@ -26,11 +26,21 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Marco Lipparini <developer@liarco.net>
  */
 #[AsCommand(
-    name: 'nft:export-metadata',
-    description: 'Exports a new metadata folder with all the files updating and shuffling them using the current mapping (if any)',
+    name: self::NAME,
+    description: self::DESCRIPTION,
 )]
 class ExportMetadataCommand extends Command
 {
+    /**
+     * @var string
+     */
+    final public const NAME = 'nft:export-metadata';
+
+    /**
+     * @var string
+     */
+    final public const DESCRIPTION = 'Exports a new metadata folder with all the files updating and shuffling them using the current mapping (if any)';
+
     /**
      * @var string
      */

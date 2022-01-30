@@ -24,11 +24,21 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Marco Lipparini <developer@liarco.net>
  */
 #[AsCommand(
-    name: 'nft:total-supply',
-    description: 'Returns the current total supply',
+    name: self::NAME,
+    description: self::DESCRIPTION,
 )]
 class TotalSupplyCommand extends Command
 {
+    /**
+     * @var string
+     */
+    final public const NAME = 'nft:total-supply';
+
+    /**
+     * @var string
+     */
+    final public const DESCRIPTION = 'Returns the current total supply';
+
     public function __construct(
         private readonly CachedTotalSupplyProvider $cachedTotalSupplyProvider,
         string $name = null,

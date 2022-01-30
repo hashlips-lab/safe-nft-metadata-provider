@@ -27,11 +27,21 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Marco Lipparini <developer@liarco.net>
  */
 #[AsCommand(
-    name: 'nft:shuffle-collection',
-    description: 'Generates a new shuffle mapping for all the tokens (or a given range)',
+    name: self::NAME,
+    description: self::DESCRIPTION,
 )]
 class ShuffleCollectionCommand extends Command
 {
+    /**
+     * @var string
+     */
+    final public const NAME = 'nft:shuffle-collection';
+
+    /**
+     * @var string
+     */
+    final public const DESCRIPTION = 'Generates a new shuffle mapping for all the tokens (or a given range)';
+
     /**
      * @var string
      */

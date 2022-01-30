@@ -48,7 +48,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                     "\n",
                     array_map(
                         fn ($line) => trim($line, '/* '),
-                        explode("\n", file_get_contents(__DIR__.'/license-header-template.txt')),
+                        explode("\n", (string) file_get_contents(__DIR__.'/license-header-template.txt')),
                     ),
                 ),
             ),
