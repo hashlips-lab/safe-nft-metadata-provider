@@ -35,11 +35,6 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 
     private readonly S3Client $s3Client;
 
-    /**
-     * @var int[]
-     */
-    private array $shuffleMapping = [];
-
     public function __construct(
         readonly string $region,
         readonly string $endpointUrl,
@@ -166,23 +161,23 @@ final class S3FilesystemDriver implements CollectionFilesystemDriverInterface
 
     public function getShuffleMapping(): ?array
     {
-        if (empty($this->shuffleMapping)) {
-            try {
-                /** @var int[] $shuffleMappingData */
-                $shuffleMappingData = Json::decode(
-                    $this->getObject(self::MAPPING_PATH)->contents,
-                    Json::FORCE_ARRAY,
-                );
+        try {
+            $shuffleMapping = Json::decode($this->getObject(self::MAPPING_PATH)->contents, Json::FORCE_ARRAY);
 
-                $this->shuffleMapping = $shuffleMappingData;
-            } catch (S3Exception $s3Exception) {
-                if (self::KEY_NOT_FOUND_ERROR_CODE === $s3Exception->getAwsErrorCode()) {
-                    return null;
-                }
+            if (! is_array($shuffleMapping)) {
+                throw new LogicException('Unexpected shuffle mapping value (it must be an array).');
             }
-        }
 
-        return $this->shuffleMapping;
+            /** @var int[] $shuffleMapping */
+
+            return $shuffleMapping;
+        } catch (S3Exception $s3Exception) {
+            if (self::KEY_NOT_FOUND_ERROR_CODE === $s3Exception->getAwsErrorCode()) {
+                return null;
+            }
+
+            throw $s3Exception;
+        }
     }
 
     public function storeNewShuffleMapping(array $newShuffleMapping): void

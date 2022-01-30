@@ -26,11 +26,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
 {
-    /**
-     * @var int[]
-     */
-    private array $shuffleMapping = [];
-
     public function __construct(
         private readonly string $localCollectionPath,
         private readonly string $assetsExtension,
@@ -126,20 +121,21 @@ final class LocalFilesystemDriver implements CollectionFilesystemDriverInterface
 
     public function getShuffleMapping(): ?array
     {
-        if (empty($this->shuffleMapping)) {
-            $mappingPath = $this->localCollectionPath.self::MAPPING_PATH;
+        $mappingPath = $this->localCollectionPath.self::MAPPING_PATH;
 
-            if (! is_file($mappingPath)) {
-                return null;
-            }
-
-            /** @var int[] $shuffleMappingData */
-            $shuffleMappingData = Json::decode(FileSystem::read($mappingPath), Json::FORCE_ARRAY);
-
-            $this->shuffleMapping = $shuffleMappingData;
+        if (! is_file($mappingPath)) {
+            return null;
         }
 
-        return $this->shuffleMapping;
+        $shuffleMapping = Json::decode(FileSystem::read($mappingPath), Json::FORCE_ARRAY);
+
+        if (! is_array($shuffleMapping)) {
+            throw new LogicException('Unexpected shuffle mapping value (it must be an array).');
+        }
+
+        /** @var int[] $shuffleMapping */
+
+        return $shuffleMapping;
     }
 
     public function storeNewShuffleMapping(array $newShuffleMapping): void

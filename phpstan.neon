@@ -6,6 +6,13 @@ parameters:
     # Fix class not found errors for PhpCsFixer
     - vendor/symplify/easy-coding-standard/vendor/autoload.php
 
+  ignoreErrors:
+    -
+        message: '#The command is missing \$this->setName\("\.\.\."\) in configure\(\) method#'
+        paths:
+            - src/Command/ExportMetadataCommand.php
+            - src/Command/ShuffleCollectionCommand.php
+
 includes:
   ##- vendor/symplify/phpstan-rules/config/array-rules.neon
   #- vendor/symplify/phpstan-rules/config/code-complexity-rules.neon

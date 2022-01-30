@@ -25,6 +25,9 @@ spec:
         - key: COLLECTION_HIDDEN_ASSET_EXTENSION
           scope: RUN_TIME
           value: gif
+        - key: METADATA_TEMPLATE
+          scope: RUN_TIME
+          value: null
         - key: CACHE_EXPIRATION
           scope: RUN_TIME
           value: '600'

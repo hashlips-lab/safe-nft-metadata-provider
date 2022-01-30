@@ -54,6 +54,10 @@ services:
     # [END] Safe NFT Metadata Provider configuration
     #
 
+    App\MetadataUpdater\TemplatedMetadataUpdater:
+        arguments:
+            - '%env(json:METADATA_TEMPLATE)%'
+
     # Collection manager service
     App\Service\CollectionManager:
         arguments:

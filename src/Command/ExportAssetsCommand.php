@@ -24,11 +24,21 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Marco Lipparini <developer@liarco.net>
  */
 #[AsCommand(
-    name: 'nft:export-assets',
-    description: 'Exports a new assets folder with all the files shuffling them using the current mapping (if any)',
+    name: self::NAME,
+    description: self::DESCRIPTION,
 )]
 class ExportAssetsCommand extends Command
 {
+    /**
+     * @var string
+     */
+    final public const NAME = 'nft:export-assets';
+
+    /**
+     * @var string
+     */
+    final public const DESCRIPTION = 'Exports a new assets folder with all the files shuffling them using the current mapping (if any)';
+
     public function __construct(
         private readonly CollectionManager $collectionManager,
         string $name = null,
