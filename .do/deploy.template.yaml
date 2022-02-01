@@ -27,7 +27,7 @@ spec:
           value: gif
         - key: METADATA_TEMPLATE
           scope: RUN_TIME
-          value: null
+          value: 'null'
         - key: CACHE_EXPIRATION
           scope: RUN_TIME
           value: '600'
