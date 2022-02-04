@@ -57,10 +57,9 @@ spec:
           scope: RUN_TIME
           type: SECRET
           value: https://mainnet.infura.io/v3/YOUR_PROJECT_ID_HERE
-      github:
+      git:
         branch: main
-        deploy_on_push: true
-        repo: hashlips-lab/safe-nft-metadata-provider
+        repo_clone_url: https://github.com/hashlips-lab/safe-nft-metadata-provider.git
       http_port: 8080
       instance_count: 1
       instance_size_slug: basic-xxs
