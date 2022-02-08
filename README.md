@@ -21,8 +21,9 @@ This project was created for educational purposes, please refer to the [LICENCE]
 This solution provides a **fair minting experience for everyone**.
 Use it during the minting stage, then move your collection back to a decentralized storage using the included tools.
 
-## YouTube tutorial
-Coming soon...
+## YouTube tutorials
+ - How to setup this app for a new collection: https://youtu.be/fO5nT-TCIZs
+ - How to setup this app for an **already revealed** collection: _COMING SOON_
 
 ## Deployment suggestions
 We suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095), behind a strong CDN network like
