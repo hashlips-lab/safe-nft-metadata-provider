@@ -23,7 +23,7 @@ Use it during the minting stage, then move your collection back to a decentraliz
 
 ## YouTube tutorials
  - How to setup this app for a new collection: https://youtu.be/fO5nT-TCIZs
- - How to setup this app for an **already revealed** collection: _COMING SOON_
+ - How to setup this app for an **already revealed** collection: https://youtu.be/sHOt0xdg5Dg
 
 ## Deployment suggestions
 We suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095), behind a strong CDN network like
