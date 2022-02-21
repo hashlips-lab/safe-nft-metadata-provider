@@ -66,7 +66,7 @@ final class TemplatedMetadataUpdater implements MetadataUpdaterInterface
         }
 
         foreach ($this->template as $key => $value) {
-            if (! is_string($value) || (isset($metadata[$key]) && ! is_string($metadata[$key]))) {
+            if (is_array($value) || (isset($metadata[$key]) && is_array($metadata[$key]))) {
                 throw new RuntimeException('Deep level replacement is not supported in METADATA_TEMPLATE.');
             }
 
