@@ -52,7 +52,7 @@ final class TemplatedMetadataUpdater implements MetadataUpdaterInterface
     private const ASSET_URI_PLACEHOLDER = '{ASSET_URI}';
 
     /**
-     * @param array<string, string> $template
+     * @param array<string, mixed> $template
      */
     public function __construct(
         private readonly ?array $template,
@@ -74,8 +74,12 @@ final class TemplatedMetadataUpdater implements MetadataUpdaterInterface
         }
     }
 
-    private function replacePlaceholders(string $value, int $tokenId, string $assetUri): string|int
+    private function replacePlaceholders(mixed $value, int $tokenId, string $assetUri): mixed
     {
+        if (! is_string($value)) {
+            return $value;
+        }
+
         if (self::INT_TOKEN_ID_PLACEHOLDER === $value) {
             return $tokenId;
         }
