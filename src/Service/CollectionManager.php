@@ -166,7 +166,7 @@ final class CollectionManager
     {
         $this->collectionFilesystemDriver->storeExportedMetadata(
             $tokenId,
-            $this->getMetadata($tokenId, $uriPrefix.'/'.$tokenId.'.json'),
+            $this->getMetadata($tokenId, $uriPrefix.'/'.$tokenId.'.'.$this->collectionFilesystemDriver->getAssetsExtension()),
         );
     }
 
