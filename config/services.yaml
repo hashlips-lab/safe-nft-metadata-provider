@@ -6,6 +6,7 @@
 parameters:
     app.cache_expiration: '%env(int:CACHE_EXPIRATION)%'
     app.collection_is_revealed: '%env(bool:COLLECTION_IS_REVEALED)%'
+    app.collection_first_index: '%env(int:COLLECTION_FIRST_INDEX)%'
     app.collection_website: '%env(COLLECTION_WEBSITE)%'
     app.collection_max_supply: '%env(int:COLLECTION_MAX_SUPPLY)%'
     app.collection_assets_extension: '%env(COLLECTION_ASSETS_EXTENSION)%'

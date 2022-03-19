@@ -13,6 +13,9 @@ spec:
         - key: COLLECTION_IS_REVEALED
           scope: RUN_TIME
           value: 'false'
+        - key: COLLECTION_FIRST_INDEX
+          scope: RUN_TIME
+          value: '1'
         - key: COLLECTION_WEBSITE
           scope: RUN_TIME
           value: https://www.example.com
