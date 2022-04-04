@@ -83,7 +83,7 @@ final class CollectionManager
                 $metadata,
                 $tokenId,
                 $assetUri ?? $this->urlGenerator->generate(
-                    RouteName::GET_ASSET,
+                    RouteName::GET_IMG_ASSET,GET_3D_ASSET,
                     [
                         'tokenId' => $tokenId,
                         '_format' => $this->collectionFilesystemDriver->getAssetsExtension(),
@@ -166,10 +166,7 @@ final class CollectionManager
     {
         $this->collectionFilesystemDriver->storeExportedMetadata(
             $tokenId,
-            $this->getMetadata(
-                $tokenId,
-                $uriPrefix.'/'.$tokenId.'.'.$this->collectionFilesystemDriver->getAssetsExtension(),
-            ),
+            $this->getMetadata($tokenId, $uriPrefix.'/'.$tokenId.'.json'),
         );
     }
 
