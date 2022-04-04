@@ -52,7 +52,7 @@ final class TemplatedMetadataUpdater implements MetadataUpdaterInterface
     private const ASSET_URI_PLACEHOLDER = '{ASSET_URI}';
 
     /**
-     * @param array<string, mixed> $template
+     * @param array<string, string> $template
      */
     public function __construct(
         private readonly ?array $template,
@@ -66,7 +66,7 @@ final class TemplatedMetadataUpdater implements MetadataUpdaterInterface
         }
 
         foreach ($this->template as $key => $value) {
-            if (is_array($value) || (isset($metadata[$key]) && is_array($metadata[$key]))) {
+            if (! is_string($value) || (isset($metadata[$key]) && ! is_string($metadata[$key]))) {
                 throw new RuntimeException('Deep level replacement is not supported in METADATA_TEMPLATE.');
             }
 
@@ -74,12 +74,8 @@ final class TemplatedMetadataUpdater implements MetadataUpdaterInterface
         }
     }
 
-    private function replacePlaceholders(mixed $value, int $tokenId, string $assetUri): mixed
+    private function replacePlaceholders(string $value, int $tokenId, string $assetUri): string|int
     {
-        if (! is_string($value)) {
-            return $value;
-        }
-
         if (self::INT_TOKEN_ID_PLACEHOLDER === $value) {
             return $tokenId;
         }

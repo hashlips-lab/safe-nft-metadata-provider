@@ -8,7 +8,8 @@ parameters:
     app.collection_is_revealed: '%env(bool:COLLECTION_IS_REVEALED)%'
     app.collection_website: '%env(COLLECTION_WEBSITE)%'
     app.collection_max_supply: '%env(int:COLLECTION_MAX_SUPPLY)%'
-    app.collection_assets_extension: '%env(COLLECTION_ASSETS_EXTENSION)%'
+    app.collection_img_assets_extension: '%env(COLLECTION_IMG_ASSETS_EXTENSION)%'
+    app.collection_3d_assets_extension: '%env(COLLECTION_3D_ASSETS_EXTENSION)%'
     app.collection_hidden_asset_extension: '%env(COLLECTION_HIDDEN_ASSET_EXTENSION)%'
 
 services:
@@ -69,7 +70,8 @@ services:
         class: App\FilesystemDriver\LocalFilesystemDriver
         arguments:
             - '%env(resolve:LOCAL_FS_DRIVER_COLLECTION_PATH)%'
-            - '%app.collection_assets_extension%'
+            - '%app.collection_img_assets_extension%'
+            - '%app.collection_3d_assets_extension%'
             - '%app.collection_hidden_asset_extension%'
 
     file_system_driver.s3:
@@ -81,7 +83,8 @@ services:
             - '%env(resolve:S3_FS_DRIVER_SECRET_KEY)%'
             - '%env(resolve:S3_FS_DRIVER_BUCKET_NAME)%'
             - '%env(resolve:S3_FS_DRIVER_OBJECTS_KEY_PREFIX)%'
-            - '%app.collection_assets_extension%'
+            - '%app.collection_img_assets_extension%'
+            - '%app.collection_3d_assets_extension%'
             - '%app.collection_hidden_asset_extension%'
 
     # Total supply providers
