@@ -31,9 +31,9 @@ const collectionDataUpdater = new CollectionDataUpdater(
    */
   new ERC721CollectionStatusProvider(contract),
   /*
-   * The Updaters are objects which perform operations whenever a token has to
+   * The DataUpdaters are objects which perform operations whenever a token has to
    * be revealed or hidden.
-   * The S3SingleFileUpdater is the simplest one: it copies a single file from
+   * The S3BasicFileDataUpdater is the simplest one: it copies a single file from
    * a private folder to a public one.
    */
   [
