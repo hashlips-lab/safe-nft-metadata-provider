@@ -1,8 +1,0 @@
-twig:
-    default_path: '%kernel.project_dir%/templates'
-    globals:
-        collection_website: '%app.collection_website%'
-
-when@test:
-    twig:
-        strict_variables: true

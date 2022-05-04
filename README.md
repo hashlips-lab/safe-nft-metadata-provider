@@ -1,36 +1,34 @@
 # Safe NFT Metadata Provider
 
-A simple yet powerful HTTP metadata and assets provider for NFT collections using [Symfony](https://www.symfony.com).
+A simple yet powerful way to protect your NFT tokens from snipers.
 
 ## Disclaimer
 This project was created for educational purposes, please refer to the [LICENCE](LICENSE) file for further information.
 
 ## Main features
-- hide metadata for unminted tokens
-- update the total supply in many ways _(manually, OpenSea API, Web3 or even your own implementation...)_
-- shuffle a range of tokens without messing around with your original metadata
-  _(e.g. owning a half-minted collection? We have you covered! Keep you tokens safe with a zero-downtime solution
-  and keep snipers away)_
-- powerful collection management tools built-in _(shuffle tokens, update metadata, etc.)_
-- customizable to fit your needs
+- retrieves the collection data about which tokens should be made publicly visible
+- hides/reveals the metadata and assets when needed (e.g. on mint, once every N seconds or even based on custom logic)
+- works with the [HashLips Labs](https://www.github.com/hashlips-lab)' contracts out-of-the-box, but can be adapted to any collection/contract
+- it's extremely customizable _(you can even turn on a light at home on every mint)_
 - easy and strong deployment options _(ranging from the newbie to the expert)_
-- multiple storage options _(local, S3 or your own implementation...)_
 - open-source (for everyone, forever)
 
 ## Meant for decentralization
 This solution provides a **fair minting experience for everyone**.
-Use it during the minting stage, then move your collection back to a decentralized storage using the included tools.
+Use it during the minting stage, then move your collection back to a decentralized storage option like IPFS.
 
 ## YouTube tutorials
+- _Coming soon..._
+
+### Videos about versions "< 2.0.0"
 - How to setup this app for a new collection: https://youtu.be/fO5nT-TCIZs
 - How to setup this app for an **already revealed** collection: https://youtu.be/sHOt0xdg5Dg
 
 ## Deployment suggestions
-We suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095), behind a strong CDN network like
-[CloudFlare](https://www.cloudflare.com).
+We suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095).
 
-By using the following referral link you will be given a 100$ credit on DigitalOcean: https://m.do.co/c/bcc172152095
+By using the following referral link you will be given a 100$ free credit on DigitalOcean: https://m.do.co/c/bcc172152095
 
 You can also do a one-click deployment on DigitalOcean:
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/main)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/v2)
