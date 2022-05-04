@@ -9,7 +9,6 @@ spec:
       envs:
         - key: RPC_ENDPOINT
           scope: RUN_TIME
-          type: SECRET
           value: https://mainnet.infura.io/v3/YOUR_PROJECT_ID_HERE
         - key: CONTRACT_ADDRESS
           scope: RUN_TIME
@@ -23,11 +22,9 @@ spec:
           value: https://fra1.digitaloceanspaces.com
         - key: S3_ACCESS_KEY
           scope: RUN_TIME
-          type: SECRET
           value: YOUR_ACCESS_KEY
         - key: S3_SECRET_KEY
           scope: RUN_TIME
-          type: SECRET
           value: YOUR_SECRET_KEY
         - key: S3_BUCKET_NAME
           scope: RUN_TIME
