@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { BigNumber } from 'ethers';
 import {
   CollectionDataUpdater,
   ERC721Contract,
@@ -50,7 +51,7 @@ const collectionDataUpdater = new CollectionDataUpdater(
       s3Config,
       '/private/metadata',
       '/public/metadata',
-      (tokenId: number, metadata: any) => {
+      (tokenId: BigNumber, metadata: any) => {
         // Update any metadata value here...
         metadata['image'] = process.env.PUBLIC_ASSETS_URI_TEMPLATE.replace('{{TOKEN_ID}}', tokenId.toString());
 

@@ -342,13 +342,13 @@
     "@ethersproject/properties" "^5.6.0"
     "@ethersproject/strings" "^5.6.0"
 
-"@hashlips-lab/collection-data-updater@^1.0.0-beta.0":
-  version "1.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.0.0-beta.0.tgz#25541e0f94e7efe3654b5be087a7e229d34ab01f"
-  integrity sha512-C9IMQErq3cr0r/ZH5dqn6SyIAuealKGoZRkoEc9qCeCVZymBLnnkijpFzVkBc9kIh/nr5iE5B1DWlwhfjOiQ0w==
+"@hashlips-lab/collection-data-updater@1.0.0-beta.2":
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.0.0-beta.2.tgz#25bb2ff3e6c8bbefdbf4c08bdce206545376c248"
+  integrity sha512-CUjrQHX2IZx7vLe85g8MGA6o2rYkWK0Sic6IN7Kt+jUOeC4LA9vHCFWvQZ670QPmxQ8a2TZD+dpC3aeBIk+3lA==
   dependencies:
     aws-sdk "^2.1126.0"
-    ethers "^5.6.4"
+    ethers "^5.6.5"
 
 "@types/node@^17.0.31":
   version "17.0.31"
@@ -422,7 +422,7 @@ elliptic@6.5.4:
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-ethers@^5.6.4:
+ethers@^5.6.5:
   version "5.6.5"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.6.5.tgz#3185ac7815dc640993408adf6f133ffabfbcbb63"
   integrity sha512-9CTmplO9bv0s/aPw3HB3txGzKz3tUSI2EfO4dJo0W2WvaEq1ArgsEX6obV+bj5X3yY+Zgb1kAux8TDtJKe1FaA==
