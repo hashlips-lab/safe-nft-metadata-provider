@@ -17,15 +17,15 @@ spec:
           scope: RUN_TIME
           value: .png
 
-        - key: S3_ENDPOINT_URL
-          scope: RUN_TIME
-          value: https://fra1.digitaloceanspaces.com
         - key: S3_ACCESS_KEY
           scope: RUN_TIME
           value: YOUR_ACCESS_KEY
         - key: S3_SECRET_KEY
           scope: RUN_TIME
           value: YOUR_SECRET_KEY
+        - key: S3_ENDPOINT_URL
+          scope: RUN_TIME
+          value: https://fra1.digitaloceanspaces.com
         - key: S3_BUCKET_NAME
           scope: RUN_TIME
           value: my-bucket
