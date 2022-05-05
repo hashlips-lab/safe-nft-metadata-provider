@@ -16,6 +16,9 @@ spec:
         - key: ASSETS_EXTENSION
           scope: RUN_TIME
           value: .png
+        - key: PUBLIC_ASSETS_URI_TEMPLATE
+          scope: RUN_TIME
+          value: https://fra1.digitaloceanspaces.com/my-bucket/public/assets/{{TOKEN_ID}}.png
 
         - key: S3_ACCESS_KEY
           scope: RUN_TIME

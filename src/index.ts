@@ -66,7 +66,7 @@ const collectionDataUpdater = new CollectionDataUpdater(
    * events or timers.
    */
   [
-    new UpdateAllTokensEveryNSecondsRuntime(60 * 10),
+    new UpdateAllTokensEveryNSecondsRuntime(60 * 30),
     new UpdateTokenOnMintRuntime(contract),
   ],
 );
