@@ -1,5 +1,5 @@
-import * as dotenv from 'dotenv';
-import { BigNumber } from 'ethers';
+import * as dotenv from "dotenv";
+import { BigNumber } from "ethers";
 import {
   CollectionDataUpdater,
   ERC721Contract,
@@ -9,7 +9,7 @@ import {
   S3ConfigurationInterface,
   UpdateAllTokensEveryNSecondsRuntime,
   UpdateTokenOnMintRuntime,
-} from '@hashlips-lab/collection-data-updater';
+} from "@hashlips-lab/collection-data-updater";
 
 dotenv.config();
 
@@ -40,20 +40,20 @@ const collectionDataUpdater = new CollectionDataUpdater(
   [
     // Order is respected, so you should update your assets before the metadata.
     new S3BasicFileDataUpdater(
-      'Asset',
+      "Asset",
       s3Config,
-      '/private/assets',
-      '/public/assets',
+      "/private/assets",
+      "/public/assets",
       process.env.ASSETS_EXTENSION,
     ),
     new S3BasicNftMetadataDataUpdater(
-      'Metadata',
+      "Metadata",
       s3Config,
-      '/private/metadata',
-      '/public/metadata',
+      "/private/metadata",
+      "/public/metadata",
       (tokenId: BigNumber, metadata: any) => {
         // Update any metadata value here...
-        metadata['image'] = process.env.PUBLIC_ASSETS_URI_TEMPLATE.replace('{{TOKEN_ID}}', tokenId.toString());
+        metadata["image"] = process.env.PUBLIC_ASSETS_URI_TEMPLATE.replace("{{TOKEN_ID}}", tokenId.toString());
 
         return metadata;
       },
