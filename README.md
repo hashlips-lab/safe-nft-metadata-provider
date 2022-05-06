@@ -20,7 +20,8 @@ Use it during the minting stage, then move your collection back to a decentraliz
 ## YouTube tutorials
 - _Coming soon..._
 
-### Videos about versions "< 2.0.0"
+### Legacy videos
+#### v1.x
 - How to setup this app for a new collection: https://youtu.be/fO5nT-TCIZs
 - How to setup this app for an **already revealed** collection: https://youtu.be/sHOt0xdg5Dg
 
