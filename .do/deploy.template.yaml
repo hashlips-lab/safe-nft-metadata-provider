@@ -13,9 +13,27 @@ spec:
         - key: CONTRACT_ADDRESS
           scope: RUN_TIME
           value: 0xYOUR_CONTRACT_ADDRESS
+        - key: START_TOKEN_ID
+          scope: RUN_TIME
+          value: '1'
+
+        - key: PRIVATE_ASSETS_PATH
+          scope: RUN_TIME
+          value: /private/assets
+        - key: PUBLIC_ASSETS_PATH
+          scope: RUN_TIME
+          value: /public/assets
         - key: ASSETS_EXTENSION
           scope: RUN_TIME
           value: .png
+
+        - key: PRIVATE_METADATA_PATH
+          scope: RUN_TIME
+          value: /private/metadata
+        - key: PUBLIC_METADATA_PATH
+          scope: RUN_TIME
+          value: /public/metadata
+
         - key: PUBLIC_ASSETS_URI_TEMPLATE
           scope: RUN_TIME
           value: https://fra1.digitaloceanspaces.com/my-bucket/public/assets/{{TOKEN_ID}}.png
@@ -34,6 +52,10 @@ spec:
           value: my-bucket
         - key: S3_PATH_PREFIX
           scope: RUN_TIME
+
+        - key: FULL_REFRESH_DELAY
+          scope: RUN_TIME
+          value: '1800'
       git:
         branch: v2
         repo_clone_url: https://github.com/hashlips-lab/safe-nft-metadata-provider.git

@@ -30,7 +30,7 @@ const collectionDataUpdater = new CollectionDataUpdater(
   /*
    * This object tells which tokens can be revealed and which ones cannot.
    */
-  new ERC721CollectionStatusProvider(contract),
+  new ERC721CollectionStatusProvider(contract, BigNumber.from(process.env.START_TOKEN_ID)),
   /*
    * The DataUpdaters are objects which perform operations whenever a token has to
    * be revealed or hidden.
@@ -42,15 +42,15 @@ const collectionDataUpdater = new CollectionDataUpdater(
     new S3BasicFileDataUpdater(
       "Asset",
       s3Config,
-      "/private/assets",
-      "/public/assets",
+      process.env.PRIVATE_ASSETS_PATH,
+      process.env.PUBLIC_ASSETS_PATH,
       process.env.ASSETS_EXTENSION,
     ),
     new S3BasicNftMetadataDataUpdater(
       "Metadata",
       s3Config,
-      "/private/metadata",
-      "/public/metadata",
+      process.env.PRIVATE_METADATA_PATH,
+      process.env.PUBLIC_METADATA_PATH,
       (tokenId: BigNumber, metadata: any) => {
         // Update any metadata value here...
         metadata["image"] = process.env.PUBLIC_ASSETS_URI_TEMPLATE.replace("{{TOKEN_ID}}", tokenId.toString());
@@ -66,7 +66,7 @@ const collectionDataUpdater = new CollectionDataUpdater(
    * events or timers.
    */
   [
-    new UpdateAllTokensEveryNSecondsRuntime(60 * 30),
+    new UpdateAllTokensEveryNSecondsRuntime(parseInt(process.env.FULL_REFRESH_DELAY)),
     new UpdateTokenOnMintRuntime(contract),
   ],
 );

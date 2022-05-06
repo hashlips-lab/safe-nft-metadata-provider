@@ -342,10 +342,10 @@
     "@ethersproject/properties" "^5.6.0"
     "@ethersproject/strings" "^5.6.0"
 
-"@hashlips-lab/collection-data-updater@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.0.0-beta.2.tgz#25bb2ff3e6c8bbefdbf4c08bdce206545376c248"
-  integrity sha512-CUjrQHX2IZx7vLe85g8MGA6o2rYkWK0Sic6IN7Kt+jUOeC4LA9vHCFWvQZ670QPmxQ8a2TZD+dpC3aeBIk+3lA==
+"@hashlips-lab/collection-data-updater@1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.0.0-beta.3.tgz#821359e0dba32a19649b084c2b78f779ee62845c"
+  integrity sha512-a6vkxDDO4aTqa1Rt+YfNnuRROYIl2ezhJvuA6q5Uli7YeNFftukkGb9WAag2InTY/nclN/JtDZb0i9x2ogMS8A==
   dependencies:
     aws-sdk "^2.1126.0"
     ethers "^5.6.5"
