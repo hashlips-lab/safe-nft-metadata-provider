@@ -17,7 +17,7 @@
     "/dist"
   ],
   "dependencies": {
-    "@hashlips-lab/collection-data-updater": "1.0.0-beta.3",
+    "@hashlips-lab/collection-data-updater": "^1.0.0",
     "dotenv": "^16.0.0"
   },
   "devDependencies": {
