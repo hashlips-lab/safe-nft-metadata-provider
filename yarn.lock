@@ -344,9 +344,9 @@
     "@ethersproject/strings" "^5.6.1"
 
 "@hashlips-lab/collection-data-updater@^1.0.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.1.0.tgz#dd70d00bdc98787007d188cbdce49dfb4b3b1fb0"
-  integrity sha512-Ibm7qD2+HTV6il+CtlvKfY8zVyM3i7Y8eITpKWs12Rnkxk3+Od0wcLbpS80OKZ7Jb8BIz1e4w123TKiskM/jUA==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.1.1.tgz#da78a32a1eb84acc4931879c68ba3b7f6f97276d"
+  integrity sha512-hY/G0toiY7r6bK/1fdwGvOCpp8l9ER4DGUiXDHEvuILqB7PBuACRdIIj5t7ALNaMMJ+qUmz+XHy/yfGnXXCP0w==
   dependencies:
     aws-sdk "^2.1126.0"
     ethers "^5.6.5"
