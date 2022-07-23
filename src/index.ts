@@ -67,7 +67,7 @@ const collectionDataUpdater = new CollectionDataUpdater(
    */
   [
     new UpdateAllTokensEveryNSecondsRuntime(parseInt(process.env.FULL_REFRESH_DELAY)),
-    new UpdateTokenOnMintRuntime(contract),
+    new UpdateTokenOnMintRuntime(contract, parseInt(process.env.MINT_REACTION_DELAY)),
   ],
 );
 
