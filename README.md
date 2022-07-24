@@ -25,6 +25,13 @@ Use it during the minting stage, then move your collection back to a decentraliz
 - How to setup this app for a new collection: https://youtu.be/fO5nT-TCIZs
 - How to setup this app for an **already revealed** collection: https://youtu.be/sHOt0xdg5Dg
 
+## Requirements
+
+- [NodeJS](https://nodejs.org/) (v16+)
+- S3-compatible storage solution (e.g. [AWS S3](https://aws.amazon.com/s3/), [DigitalOcean Spaces](https://m.do.co/c/bcc172152095), etc.)
+- S3-compatible client (e.g. [Cyberduck](https://cyberduck.io/)) to upload your collection files (optional)
+- Web3 JSON-RPC node (e.g. [Infura](https://infura.io/), [Alchemy](https://www.alchemy.com/), etc.)
+
 ## Deployment suggestions
 We suggest deploying this app using [DigitalOcean](https://m.do.co/c/bcc172152095).
 
