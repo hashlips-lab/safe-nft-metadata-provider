@@ -1,5 +1,5 @@
-import * as dotenv from "dotenv";
 import { BigNumber } from "ethers";
+import { config } from "./config";
 import {
   CollectionDataUpdater,
   ERC721Contract,
@@ -11,26 +11,24 @@ import {
   UpdateTokenOnMintRuntime,
 } from "@hashlips-lab/collection-data-updater";
 
-dotenv.config();
-
 const contract = new ERC721Contract(
-  process.env.CONTRACT_ADDRESS,
-  process.env.RPC_ENDPOINT,
+  config.CONTRACT_ADDRESS,
+  config.RPC_ENDPOINT,
 );
 
 const s3Config = {
-  accessKey: process.env.S3_ACCESS_KEY,
-  secretKey: process.env.S3_SECRET_KEY,
-  endpoint: process.env.S3_ENDPOINT_URL,
-  bucketName: process.env.S3_BUCKET_NAME,
-  pathPrefix: process.env.S3_PATH_PREFIX,
+  accessKey: config.S3_ACCESS_KEY,
+  secretKey: config.S3_SECRET_KEY,
+  endpoint: config.S3_ENDPOINT_URL,
+  bucketName: config.S3_BUCKET_NAME,
+  pathPrefix: config.S3_PATH_PREFIX,
 } as S3ConfigurationInterface;
 
 const collectionDataUpdater = new CollectionDataUpdater(
   /*
    * This object tells which tokens can be revealed and which ones cannot.
    */
-  new ERC721CollectionStatusProvider(contract, BigNumber.from(process.env.START_TOKEN_ID)),
+  new ERC721CollectionStatusProvider(contract, BigNumber.from(config.START_TOKEN_ID)),
   /*
    * The DataUpdaters are objects which perform operations whenever a token has to
    * be revealed or hidden.
@@ -42,18 +40,18 @@ const collectionDataUpdater = new CollectionDataUpdater(
     new S3BasicFileDataUpdater(
       "Asset",
       s3Config,
-      process.env.PRIVATE_ASSETS_PATH,
-      process.env.PUBLIC_ASSETS_PATH,
-      process.env.ASSETS_EXTENSION,
+      config.PRIVATE_ASSETS_PATH,
+      config.PUBLIC_ASSETS_PATH,
+      config.ASSETS_EXTENSION,
     ),
     new S3BasicNftMetadataDataUpdater(
       "Metadata",
       s3Config,
-      process.env.PRIVATE_METADATA_PATH,
-      process.env.PUBLIC_METADATA_PATH,
+      config.PRIVATE_METADATA_PATH,
+      config.PUBLIC_METADATA_PATH,
       (tokenId: BigNumber, metadata: any) => {
         // Update any metadata value here...
-        metadata["image"] = process.env.PUBLIC_ASSETS_URI_TEMPLATE.replace("{{TOKEN_ID}}", tokenId.toString());
+        metadata["image"] = config.PUBLIC_ASSETS_URI_TEMPLATE.replace("{{TOKEN_ID}}", tokenId.toString());
 
         return metadata;
       },
@@ -66,8 +64,8 @@ const collectionDataUpdater = new CollectionDataUpdater(
    * events or timers.
    */
   [
-    new UpdateAllTokensEveryNSecondsRuntime(parseInt(process.env.FULL_REFRESH_DELAY)),
-    new UpdateTokenOnMintRuntime(contract, parseInt(process.env.MINT_REACTION_DELAY)),
+    new UpdateAllTokensEveryNSecondsRuntime(parseInt(config.FULL_REFRESH_DELAY)),
+    new UpdateTokenOnMintRuntime(contract),
   ],
 );
 

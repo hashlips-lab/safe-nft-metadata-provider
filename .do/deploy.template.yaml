@@ -56,9 +56,6 @@ spec:
         - key: FULL_REFRESH_DELAY
           scope: RUN_TIME
           value: '3600'
-        - key: MINT_REACTION_DELAY
-          scope: RUN_TIME
-          value: '10'
       git:
         branch: v2
         repo_clone_url: https://github.com/hashlips-lab/safe-nft-metadata-provider.git

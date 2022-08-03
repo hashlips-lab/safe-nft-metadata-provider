@@ -344,9 +344,9 @@
     "@ethersproject/strings" "^5.6.1"
 
 "@hashlips-lab/collection-data-updater@^1.0.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.1.1.tgz#da78a32a1eb84acc4931879c68ba3b7f6f97276d"
-  integrity sha512-hY/G0toiY7r6bK/1fdwGvOCpp8l9ER4DGUiXDHEvuILqB7PBuACRdIIj5t7ALNaMMJ+qUmz+XHy/yfGnXXCP0w==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@hashlips-lab/collection-data-updater/-/collection-data-updater-1.2.1.tgz#5bc912386abb416d3045e354786162ab042a3f1d"
+  integrity sha512-BM6Zk+zfFDANHvqfcqSFh62N9YfUlV0s0g3yMHtvEEGRzbZcQM0/HbYfmeQZXLv6q26qO4gmQo7h5uOBI9pSng==
   dependencies:
     aws-sdk "^2.1126.0"
     ethers "^5.6.5"
@@ -367,9 +367,9 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 aws-sdk@^2.1126.0:
-  version "2.1181.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1181.0.tgz#6ec2997881ae3df76e56d7150fc2992f12ce43dc"
-  integrity sha512-AAHSknRFAIjXBA/XNAL7gS79agr1LbS0oGimOJqJauGSJfWNaOpDc7z6OLNUQqGa5Joc3maD5QJcSKp1Pm/deQ==
+  version "2.1187.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1187.0.tgz#eb928d64305630f53b8f6dad5c7b91fec8f04622"
+  integrity sha512-QcxQ3asIhH9QQnN/5JO3MaHRjwcy3/AsBzcAjPU+lHZGV0drnuDmg3ZkZuAa/mOgQ3MEi68G3gYD+481QJgnMg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
