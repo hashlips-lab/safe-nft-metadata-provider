@@ -6,7 +6,7 @@ A simple yet powerful way to protect your NFT tokens from snipers.
 This project was created for educational purposes, please refer to the [LICENCE](LICENSE) file for further information.
 
 ## Main features
-- retrieves the collection data about which tokens should be made publicly visible
+- fetches the collection data about which tokens should be made publicly visible
 - hides/reveals the metadata and assets when needed (e.g. on mint, once every N seconds or even based on custom logic)
 - works with the [HashLips Labs](https://www.github.com/hashlips-lab)' contracts out-of-the-box, but can be adapted to any collection/contract
 - it's extremely customizable _(you can even turn on a light at home on every mint)_
@@ -18,8 +18,8 @@ This solution provides a **fair minting experience for everyone**.
 Use it during the minting stage, then move your collection back to a decentralized storage option like IPFS.
 
 ## YouTube tutorials
-- [How to protect your NFTs from snipers (v2.x)](https://youtu.be/putK0ToTdhY)
-- [How to manage cloud object storage (S3) on DigitalOcean](https://youtu.be/EgeX-gb7q4w)
+- How to protect your NFTs from snipers (v2.x): https://youtu.be/putK0ToTdhY
+- How to manage cloud object storage (S3) on DigitalOcean: https://youtu.be/EgeX-gb7q4w
 
 ### Legacy videos
 #### v1.x
