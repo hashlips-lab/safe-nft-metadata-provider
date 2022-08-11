@@ -57,7 +57,7 @@ spec:
           scope: RUN_TIME
           value: '3600'
       git:
-        branch: v2
+        branch: main
         repo_clone_url: https://github.com/hashlips-lab/safe-nft-metadata-provider.git
       instance_count: 1
       instance_size_slug: basic-xxs
