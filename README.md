@@ -18,7 +18,8 @@ This solution provides a **fair minting experience for everyone**.
 Use it during the minting stage, then move your collection back to a decentralized storage option like IPFS.
 
 ## YouTube tutorials
-- _Coming soon..._
+- [How to protect your NFTs from snipers (v2.x)](https://youtu.be/putK0ToTdhY)
+- [How to manage cloud object storage (S3) on DigitalOcean](https://youtu.be/EgeX-gb7q4w)
 
 ### Legacy videos
 #### v1.x
@@ -39,4 +40,4 @@ By using the following referral link you will be given a 100$ free credit on Dig
 
 You can also do a one-click deployment on DigitalOcean:
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/v2&refcode=bcc172152095)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/main&refcode=bcc172152095)
