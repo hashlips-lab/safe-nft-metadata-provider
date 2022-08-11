@@ -4,67 +4,64 @@ spec:
     - rule: DOMAIN_FAILED
   name: safe-nft-metadata-provider
   region: fra
-  services:
-    - environment_slug: php
+  workers:
+    - environment_slug: node-js
       envs:
-        - key: APP_ENV
-          scope: RUN_AND_BUILD_TIME
-          value: prod
-        - key: COLLECTION_IS_REVEALED
+        - key: RPC_ENDPOINT
           scope: RUN_TIME
-          value: 'false'
-        - key: COLLECTION_WEBSITE
-          scope: RUN_TIME
-          value: https://www.example.com
-        - key: COLLECTION_MAX_SUPPLY
-          scope: RUN_TIME
-          value: '10000'
-        - key: COLLECTION_ASSETS_EXTENSION
-          scope: RUN_TIME
-          value: png
-        - key: COLLECTION_HIDDEN_ASSET_EXTENSION
-          scope: RUN_TIME
-          value: gif
-        - key: METADATA_TEMPLATE
-          scope: RUN_TIME
-          value: 'null'
-        - key: CACHE_EXPIRATION
-          scope: RUN_TIME
-          value: '600'
-        - key: S3_FS_DRIVER_REGION
-          scope: RUN_TIME
-          value: fra1
-        - key: S3_FS_DRIVER_ENDPOINT_URL
-          scope: RUN_TIME
-          value: https://fra1.digitaloceanspaces.com
-        - key: S3_FS_DRIVER_ACCESS_KEY
-          scope: RUN_TIME
-          type: SECRET
-          value: YOUR_ACCESS_KEY
-        - key: S3_FS_DRIVER_SECRET_KEY
-          scope: RUN_TIME
-          type: SECRET
-          value: YOUR_SECRET_KEY
-        - key: S3_FS_DRIVER_BUCKET_NAME
-          scope: RUN_TIME
-          value: my-bucket
-        - key: S3_FS_DRIVER_OBJECTS_KEY_PREFIX
-          scope: RUN_TIME
-        - key: WEB3_SMART_CONTRACT_ADDRESS
+          value: https://mainnet.infura.io/v3/YOUR_PROJECT_ID_HERE
+        - key: CONTRACT_ADDRESS
           scope: RUN_TIME
           value: 0xYOUR_CONTRACT_ADDRESS
-        - key: WEB3_HTTP_ENDPOINT
+        - key: START_TOKEN_ID
           scope: RUN_TIME
-          type: SECRET
-          value: https://mainnet.infura.io/v3/YOUR_PROJECT_ID_HERE
+          value: '1'
+
+        - key: PRIVATE_ASSETS_PATH
+          scope: RUN_TIME
+          value: /private/assets
+        - key: PUBLIC_ASSETS_PATH
+          scope: RUN_TIME
+          value: /public/assets
+        - key: ASSETS_EXTENSION
+          scope: RUN_TIME
+          value: .png
+
+        - key: PRIVATE_METADATA_PATH
+          scope: RUN_TIME
+          value: /private/metadata
+        - key: PUBLIC_METADATA_PATH
+          scope: RUN_TIME
+          value: /public/metadata
+
+        - key: PUBLIC_ASSETS_URI_TEMPLATE
+          scope: RUN_TIME
+          value: https://fra1.digitaloceanspaces.com/my-bucket/public/assets/{{TOKEN_ID}}.png
+
+        - key: S3_ACCESS_KEY
+          scope: RUN_TIME
+          value: YOUR_ACCESS_KEY
+        - key: S3_SECRET_KEY
+          scope: RUN_TIME
+          value: YOUR_SECRET_KEY
+        - key: S3_ENDPOINT_URL
+          scope: RUN_TIME
+          value: https://fra1.digitaloceanspaces.com
+        - key: S3_BUCKET_NAME
+          scope: RUN_TIME
+          value: my-bucket
+        - key: S3_PATH_PREFIX
+          scope: RUN_TIME
+
+        - key: FULL_REFRESH_DELAY
+          scope: RUN_TIME
+          value: '3600'
       git:
-        branch: main
+        branch: v2
         repo_clone_url: https://github.com/hashlips-lab/safe-nft-metadata-provider.git
-      http_port: 8080
       instance_count: 1
       instance_size_slug: basic-xxs
       name: metadata-provider
-      routes:
-        - path: /
-      run_command: heroku-php-apache2 public/
+      build_command: yarn build
+      run_command: yarn start
       source_dir: /
