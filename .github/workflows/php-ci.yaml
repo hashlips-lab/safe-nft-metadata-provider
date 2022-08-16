@@ -3,7 +3,7 @@ name: PHP CI
 on:
   push:
     branches:
-      - main
+      - 1.x
     paths:
       - .github/workflows/php-ci.yaml
       - '**.php'
