@@ -40,4 +40,4 @@ By using the following referral link you will be given a 100$ free credit on Dig
 
 You can also do a one-click deployment on DigitalOcean:
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/main&refcode=bcc172152095)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/hashlips-lab/safe-nft-metadata-provider/tree/2.x&refcode=bcc172152095)
